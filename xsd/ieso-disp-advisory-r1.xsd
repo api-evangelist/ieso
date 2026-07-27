@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Dispatch Advisory XML Schema -->
+<xs:schema targetNamespace="http://www.theIMO.com/schema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:imo="http://www.theIMO.com/schema" elementFormDefault="qualified">
+	<!-- Following stuff is report specific -->
+	<xs:include schemaLocation="http://www.theIMO.com/docrefs/schema/IMODocument_r1.xsd"/>
+	<xs:element name="IMODocBody">
+		<xs:annotation>
+			<xs:documentation>IMO Automated Document Body</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="MPShortName" nillable="false">
+					<xs:annotation>
+						<xs:documentation>Market Participant Short Name</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:minLength value="1"/>
+							<xs:maxLength value="12"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="Date" type="xs:date">
+					<xs:annotation>
+						<xs:documentation>Dispatch Date</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Hour" type="imo:Hour1To24">
+					<xs:annotation>
+						<xs:documentation>Hour in which the Dispatch interval resides (1 to 24)</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Interval" type="imo:Interval1To12">
+					<xs:annotation>
+						<xs:documentation>Dispatch Interval A value between 1 and 12 which defines a particular five minute portion for a particular dispatch hour</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Advisories">
+					<xs:annotation>
+						<xs:documentation>Dispatch advisories for a collection of resources</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence maxOccurs="unbounded">
+							<xs:element name="Advisory">
+								<xs:annotation>
+									<xs:documentation>Dispatch advisory for a specific resource</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ResourceID" nillable="false">
+											<xs:annotation>
+												<xs:documentation>Unique identifier for the resource</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="32"/>
+													<xs:minLength value="1"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Energies">
+											<xs:annotation>
+												<xs:documentation>Energy dispatch advisories for the hour</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence maxOccurs="4">
+													<xs:element name="Energy">
+														<xs:annotation>
+															<xs:documentation>Energy dispatch advisory for a specific interval of the hour</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Hour" type="imo:Hour1To24" nillable="false">
+																	<xs:annotation>
+																		<xs:documentation>Hour in which the Advisory interval resides (1 to 24)</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="Interval" type="imo:Interval1To12" nillable="false">
+																	<xs:annotation>
+																		<xs:documentation>Advisory Interval A value between 1 and 12 which defines a particular five minute portion for a particular Advisory hour</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="EnergyMW" type="imo:MW_decimal5.1" nillable="false">
+																	<xs:annotation>
+																		<xs:documentation>Energy dispatch for the Resource for Advisory Hour: Advisory Interval</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="OR10Ss" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>10-min spin OR dispatch advisories for the hour</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence maxOccurs="4">
+													<xs:element name="OR10S">
+														<xs:annotation>
+															<xs:documentation>10-min spin OR dispatch advisory for a specific interval of the hour</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Hour" type="imo:Hour1To24" nillable="false">
+																	<xs:annotation>
+																		<xs:documentation>Hour in which the Advisory interval resides (1 to 24)</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="Interval" type="imo:Interval1To12" nillable="false">
+																	<xs:annotation>
+																		<xs:documentation>Advisory Interval A value between 1 and 12 which defines a particular five minute portion for a particular Advisory hour</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="EnergyMW" type="imo:MW_decimal5.1" nillable="false">
+																	<xs:annotation>
+																		<xs:documentation>OR dispatch for the Resource for Advisory Hour: Advisory Interval</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="OR10Ns" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>10-min non-spin OR dispatch advisories for the hour</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence maxOccurs="4">
+													<xs:element name="OR10N">
+														<xs:annotation>
+															<xs:documentation>10-min non-spin OR dispatch advisory for a specific interval of the hour </xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Hour" type="imo:Hour1To24" nillable="false">
+																	<xs:annotation>
+																		<xs:documentation>Hour in which the Advisory interval resides (1 to 24)</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="Interval" type="imo:Interval1To12" nillable="false">
+																	<xs:annotation>
+																		<xs:documentation>Advisory Interval A value between 1 and 12 which defines a particular five minute portion for a particular Advisory hour</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="EnergyMW" type="imo:MW_decimal5.1" nillable="false">
+																	<xs:annotation>
+																		<xs:documentation>OR dispatch for the Resource for Advisory Hour: Advisory Interval</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="OR30Rs" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>30-min reserve OR dispatch advisories for the hour</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence maxOccurs="4">
+													<xs:element name="OR30R">
+														<xs:annotation>
+															<xs:documentation>30-min reserve OR dispatch advisory for a specific interval of the hour</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Hour" type="imo:Hour1To24" nillable="false">
+																	<xs:annotation>
+																		<xs:documentation>Hour in which the Advisory interval resides (1 to 24)</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="Interval" type="imo:Interval1To12" nillable="false">
+																	<xs:annotation>
+																		<xs:documentation>Advisory Interval A value between 1 and 12 which defines a particular five minute portion for a particular Advisory hour</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="EnergyMW" type="imo:MW_decimal5.1" nillable="false">
+																	<xs:annotation>
+																		<xs:documentation>OR dispatch for the Resource for Advisory Hour: Advisory Interval</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Dispatch hour indicates hour ending at (1 to 24)-->
+	<xs:simpleType name="Hour1To24">
+		<xs:annotation>
+			<xs:documentation>Hour in which the Dispatch / Advisory interval resides (1 to 24)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="24"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Energy or OR -->
+	<xs:simpleType name="MW_decimal5.1">
+		<xs:annotation>
+			<xs:documentation>Energy or Operating Reserve dispatch for the resource for Advisory Hour: Advisory Interval</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:totalDigits value="6"/>
+			<xs:fractionDigits value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Represents 5 minute time slice within an hour (12 intervals per hour) -->
+	<xs:simpleType name="Interval1To12">
+		<xs:annotation>
+			<xs:documentation>Hour in which the Dispatch / Advisory interval resides (1 to 24)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="12"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

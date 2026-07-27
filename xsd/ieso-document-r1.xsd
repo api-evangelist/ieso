@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Automated Document XML Schema -->
+<xs:schema targetNamespace="http://www.ieso.ca/schema" elementFormDefault="qualified" xmlns="http://www.ieso.ca/schema" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<!-- Document -->
+	<xs:element name="Document">
+		<xs:annotation>
+			<xs:documentation>Automated Document</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence maxOccurs="unbounded">
+				<xs:element ref="DocHeader"/>
+				<xs:element ref="DocBody"/>
+			</xs:sequence>
+			<xs:attribute name="docID" type="docID"/>
+		</xs:complexType>
+	</xs:element>
+	<!-- Document Revision must start from 1 up -->
+	<xs:element name="DocRevision">
+		<xs:annotation>
+			<xs:documentation>Document Revision number</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:integer">
+				<xs:minInclusive value="1"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<!-- Document header -->
+	<xs:element name="DocHeader">
+		<xs:annotation>
+			<xs:documentation>Document Header</xs:documentation>
+		</xs:annotation>
+		<xs:complexType mixed="false">
+			<xs:sequence>
+				<xs:element ref="DocTitle"/>
+				<xs:element ref="DocRevision"/>
+				<xs:element ref="DocConfidentiality"/>
+				<xs:element ref="CreatedAt"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Document title -->
+	<xs:element name="DocTitle" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Document Title</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- Creation date -->
+	<xs:element name="CreatedAt" type="xs:dateTime">
+		<xs:annotation>
+			<xs:documentation>Creation Date</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- Confidentiality-->
+	<xs:element name="DocConfClass" type="ConfidentialityClass">
+		<xs:annotation>
+			<xs:documentation>Document Confidentiality Class</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- Document Confidentiality Group -->
+	<xs:element name="DocConfGroup" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>Document Confidentiality Group</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- A collection of Document Confidentiality Groups -->
+	<xs:element name="DocConfGroups">
+		<xs:annotation>
+			<xs:documentation>Document Confidentiality Groups</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="DocConfGroup"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Document Confidentiality must contain confidentiality class -->
+	<xs:element name="DocConfidentiality">
+		<xs:annotation>
+			<xs:documentation>Document Confidentiality</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="DocConfClass"/>
+				<xs:element ref="DocConfGroups" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Document ID simple type -->
+	<xs:simpleType name="docID">
+		<xs:annotation>
+			<xs:documentation>Document ID - alphanumeric string</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-zA-Z0-9]{1,100}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Confidentiality class - can be 
+		PUB - public
+		CNF - confidential
+		HCNF - highly confidential
+		INT - internal
+	-->
+	<xs:simpleType name="ConfidentialityClass">
+		<xs:annotation>
+			<xs:documentation>Confidentiality class - can be PUB, CNF or HCNF, INT</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PUB"/>
+			<xs:enumeration value="CNF"/>
+			<xs:enumeration value="HCNF"/>
+			<xs:enumeration value="INT"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

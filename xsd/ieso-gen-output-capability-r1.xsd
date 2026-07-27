@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.theIMO.com/schema" xmlns:imo="http://www.theIMO.com/schema" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<!-- IMO Automated Document definition schema -->
+	<xs:include schemaLocation="IMODocument_r1.xsd"/>
+	<!-- Document Body -->
+	<xs:element name="IMODocBody">
+		<xs:annotation>
+			<xs:documentation>Document Body</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Date" type="xs:date" nillable="false">
+					<xs:annotation>
+						<xs:documentation>Date and time of operation</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Generators">
+					<xs:annotation>
+						<xs:documentation>Collection of all generators</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence maxOccurs="unbounded">
+							<xs:element name="Generator">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="GeneratorName" nillable="false">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:minLength value="1"/>
+													<xs:maxLength value="255"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="FuelType" nillable="false">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:minLength value="1"/>
+													<xs:maxLength value="15"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Outputs">
+											<xs:complexType>
+												<xs:sequence maxOccurs="24">
+													<xs:element name="Output">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Hour" type="imo:Hour1To24"/>
+																<xs:element name="EnergyMW" type="imo:MW_float"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="Capabilities">
+											<xs:complexType>
+												<xs:sequence maxOccurs="24">
+													<xs:element name="Capability">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Hour" type="imo:Hour1To24"/>
+																<xs:element name="EnergyMW" type="imo:MW_float"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="Hour1To24">
+		<xs:annotation>
+			<xs:documentation>Delivery hour indicates hour ending (1 to 24)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="24"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MW_float">
+		<xs:annotation>
+			<xs:documentation>MW value (active power)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:float"/>
+	</xs:simpleType>
+	<xs:element name="Hour" type="imo:Hour1To24" nillable="false"/>
+</xs:schema>

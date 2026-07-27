@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DACP Adequacy XML Schema -->
+<xs:schema xmlns="http://www.ieso.ca/schema" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.ieso.ca/schema" elementFormDefault="qualified">
+	<!-- Following stuff is report specific -->
+	<xs:include schemaLocation="Document_r1.xsd"/>
+	<xs:element name="DocBody">
+		<xs:annotation>
+			<xs:documentation>Document Body</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="DeliveryDate">
+					<xs:annotation>
+						<xs:documentation>The Date for which this DACP data applies</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="System" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>This specifies the system for which data is displayed (e.g., Ontario/East/West)</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="SystemName">
+								<xs:annotation>
+									<xs:documentation>This specifies the system name for which data is displayed (e.g., Ontario/East/West)</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Demands">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Demand" type="HourlyValue" maxOccurs="24">
+											<xs:annotation>
+												<xs:documentation>Day-ahead hourly forecast of demand (including non-dispatchable and dispatchable load, all OR requirements, and system losses)</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ORRequirements" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ORRequirement" type="HourlyValue" maxOccurs="24">
+											<xs:annotation>
+												<xs:documentation>Day-ahead hourly OR requirements)</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="TotalRequirements" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="TotalRequirement" type="HourlyValue" maxOccurs="24">
+											<xs:annotation>
+												<xs:documentation>Total Requirement. This is the sum of Deamnd and OR Requirements</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="InternalCapacities">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="InternalCapacity" type="HourlyValue" maxOccurs="24">
+											<xs:annotation>
+												<xs:documentation>Day-ahead hourly internal resources bid and offered (including dispatchable, self-scheduled, transitional and intermittent generation and dispatchable load)</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ScheduledResources">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ScheduledResource" type="HourlyValue" maxOccurs="24">
+											<xs:annotation>
+												<xs:documentation>Internal resource scheduled for each hour </xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="IntertieZonalEnergies">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ZonalEnergies" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="IntertieZoneName">
+														<xs:annotation>
+															<xs:documentation>The zone for which the imports are scheduled</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="IntertieZoneImports">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="IntertieZoneImport" type="HourlyValue" maxOccurs="24"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ExcessCapacities">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ExcessCapacity" type="HourlyValue" maxOccurs="24">
+											<xs:annotation>
+												<xs:documentation>Day-ahead hourly capacity excess/shortfall which is the available capacity plus scheduled imports minus total internal requirement. Negative value indicates shortfalls</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="UnscheduledResources">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="UnscheduledResource" type="HourlyValue" maxOccurs="24">
+											<xs:annotation>
+												<xs:documentation>Total offers/bid not scheduled which is the internal capacity minus scheduled internal resources for that delivery hour</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Hourly Value combined Delivery Hour and Energy Value-->
+	<xs:complexType name="HourlyValue">
+		<xs:sequence>
+			<xs:element name="DeliveryHour" type="Hour1To24">
+				<xs:annotation>
+					<xs:documentation>The Hour for which this data applies (1 to 24)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!-- Energy MW -->
+			<xs:element name="EnergyMW" type="MW_decimal5.1">
+				<xs:annotation>
+					<xs:documentation>The amount of Energy for this hour</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!--Decimal MW-->
+		<xs:simpleType name="MW_decimal5.1">
+		<xs:annotation>
+			<xs:documentation>The amount of Energy MW in deciaml</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:totalDigits value="6"/>
+			<xs:fractionDigits value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Delivery hour indicates hour ending at (1 to 24)-->
+	<xs:simpleType name="Hour1To24">
+		<xs:annotation>
+			<xs:documentation>The Hour for which this data applies (1 to 24)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="24"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

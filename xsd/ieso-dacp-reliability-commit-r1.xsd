@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DACP Reliability Commitments XML Schema -->
+<xs:schema xmlns="http://www.ieso.ca/schema" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.ieso.ca/schema" elementFormDefault="qualified">
+	<!-- Following stuff is report specific -->
+	<xs:include schemaLocation="Document_r1.xsd"/>
+	<xs:element name="DocBody">
+		<xs:annotation>
+			<xs:documentation>Document Body</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="DeliveryDate">
+					<xs:annotation>
+						<xs:documentation>The Date for which this DACP data applies</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ConstrainedEnergy">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="HourlyConstrainedEnergy" type="HourlyValue" maxOccurs="24">
+								<xs:annotation>
+									<xs:documentation>Day-ahead total hourly amount of generation committed for reliability</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Hourly Value combined Delivery Hour and Energy Value-->
+	<xs:complexType name="HourlyValue">
+		<xs:sequence>
+			<xs:element name="DeliveryHour" type="Hour1To24">
+				<xs:annotation>
+					<xs:documentation>The Hour for which this data applies (1 to 24)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!-- Energy MW -->
+			<xs:element name="EnergyMW" type="MW_decimal5.1">
+				<xs:annotation>
+					<xs:documentation>The amount of Energy for this hour</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!--Decimal MW-->
+	<xs:simpleType name="MW_decimal5.1">
+		<xs:annotation>
+			<xs:documentation>The amount of Energy MW in deciaml</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:totalDigits value="6"/>
+			<xs:fractionDigits value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Delivery hour indicates hour ending at (1 to 24)-->
+	<xs:simpleType name="Hour1To24">
+		<xs:annotation>
+			<xs:documentation>The Hour for which this data applies (1 to 24)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="24"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

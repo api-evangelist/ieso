@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DACP Check Source XML Schema -->
+<xs:schema targetNamespace="http://www.ieso.ca/schema" elementFormDefault="qualified" xmlns="http://www.ieso.ca/schema" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<!-- Following stuff is report specific -->
+	<xs:include schemaLocation="Document_r1.xsd"/>
+	<xs:element name="DocBody">
+		<xs:annotation>
+			<xs:documentation>Document Body</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="MPShortName" nillable="false">
+					<xs:annotation>
+						<xs:documentation>Market Participant Short Name</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:minLength value="1"/>
+							<xs:maxLength value="12"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="DeliveryDate" type="xs:date">
+					<xs:annotation>
+						<xs:documentation>The Date for which this DACP data applies</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Resource" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="TiePointID" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Identification of Market Scheduling Point</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ResourceName" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Name of Resource as registered with IESO or Boundary Entity</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ResourceType" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Type of Resource (Generator, Load, Off take, Injection etc.)</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="DailyEnergyLimit" type="MW_decimal5.1" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Daily energy limit(MWH) for Resource</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="HourlyPQPairs">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="HourlyPQPair" maxOccurs="24">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="DeliveryHour" type="Hour1To24">
+														<xs:annotation>
+															<xs:documentation>The Hour for which this DACP data applies (1 to 24)</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="NercTagID" type="xs:string" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>The NERC Tag ID for intertie transactions</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="PQPairs">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="PQPair" type="PriceQuantity" minOccurs="2" maxOccurs="20"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Hourly Value combined Price and quantity of Energy-->
+	<xs:complexType name="PriceQuantity">
+		<xs:sequence>
+			<xs:element name="OfferPrice" type="Money">
+				<xs:annotation>
+					<xs:documentation>Offered Price as part of PQ Pair</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!-- Energy MW -->
+			<xs:element name="OfferQuantity" type="MW_decimal5.1">
+				<xs:annotation>
+					<xs:documentation>Offered Quantity as part of PQ Pair</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!--Decimal MW-->
+	<xs:simpleType name="MW_decimal5.1">
+		<xs:annotation>
+			<xs:documentation>The amount of Energy MW in deciaml</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:totalDigits value="6"/>
+			<xs:fractionDigits value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Delivery hour indicates hour ending at (1 to 24)-->
+	<xs:simpleType name="Hour1To24">
+		<xs:annotation>
+			<xs:documentation>The Hour for which this data applies (1 to 24)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="24"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Price - 2 decimals -->
+	<xs:simpleType name="Money">
+		<xs:annotation>
+			<xs:documentation>Money - 2 decimals</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

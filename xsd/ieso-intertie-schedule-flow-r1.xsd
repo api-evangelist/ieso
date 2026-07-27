@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:imo="http://www.theIMO.com/schema" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.theIMO.com/schema" elementFormDefault="qualified">
+	<!-- IMO Automated Document definition schema -->
+	<xs:include schemaLocation="IMODocument_r1.xsd"/>
+	<!-- Document Body -->
+	<xs:element name="IMODocBody">
+		<xs:annotation>
+			<xs:documentation>Document Body</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Date" type="xs:date" nillable="false">
+					<xs:annotation>
+						<xs:documentation>Date and time of operation</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="IntertieZone" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Collection of tie lines between Ontario and a neighbouring jurisdiction</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="IntertieZoneName" nillable="false">
+								<xs:annotation>
+									<xs:documentation>Intertie Zone name</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="15"/>
+										<xs:minLength value="1"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="Schedules">
+								<xs:annotation>
+									<xs:documentation>Collection of Schedules</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence maxOccurs="24">
+										<xs:element name="Schedule">
+											<xs:annotation>
+												<xs:documentation>Amount of active power (MW) scheduled to be imported/exported to/from Ontario in a given hour</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element ref="imo:Hour"/>
+													<xs:element name="Import" type="imo:MW_float" nillable="false">
+														<xs:annotation>
+															<xs:documentation>Amount of active power (MW) scheduled to be imported into Ontario during a given hour from another jurisdiction</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="Export" type="imo:MW_float">
+														<xs:annotation>
+															<xs:documentation>Amount of active power (MW) scheduled to be exported from Ontario during a given hour to another jurisdiction</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Actuals">
+								<xs:annotation>
+									<xs:documentation>Collection of ActualFlows</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence maxOccurs="288">
+										<xs:element name="Actual" nillable="false">
+											<xs:annotation>
+												<xs:documentation>Net amount of active power (MW) flowing through an intertie zone at a given interval in a given hour</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element ref="imo:Hour"/>
+													<xs:element ref="imo:Interval"/>
+													<xs:element name="Flow" type="imo:MW_float">
+														<xs:annotation>
+															<xs:documentation>MW value</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Totals">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Schedules">
+								<xs:annotation>
+									<xs:documentation>Collection of Schedules</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence maxOccurs="24">
+										<xs:element name="Schedule">
+											<xs:annotation>
+												<xs:documentation>Amount of active power (MW) scheduled to be imported/exported to/from Ontario in a given hour</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element ref="imo:Hour"/>
+													<xs:element name="Import" type="imo:MW_float" nillable="false">
+														<xs:annotation>
+															<xs:documentation>Amount of active power (MW) scheduled to be imported into Ontario during a given hour from another jurisdiction</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="Export" type="imo:MW_float">
+														<xs:annotation>
+															<xs:documentation>Amount of active power (MW) scheduled to be exported from Ontario during a given hour to another jurisdiction</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Actuals">
+								<xs:annotation>
+									<xs:documentation>Collection of ActualFlows</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence maxOccurs="288">
+										<xs:element name="Actual" nillable="false">
+											<xs:annotation>
+												<xs:documentation>Net amount of active power (MW) flowing through an intertie zone at a given interval in a given hour</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element ref="imo:Hour"/>
+													<xs:element ref="imo:Interval"/>
+													<xs:element name="Flow" type="imo:MW_float">
+														<xs:annotation>
+															<xs:documentation>MW value</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Delivery hour indicates hour ending at (1 to 24)-->
+	<xs:simpleType name="Hour1To24">
+		<xs:annotation>
+			<xs:documentation>Delivery hour indicates hour ending (1 to 24)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="24"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Represents 5 minute time slice within an hour (12 intervals per hour) -->
+	<xs:simpleType name="Interval1To12">
+		<xs:annotation>
+			<xs:documentation>Represents 5 minute time slice within an hour (12 intervals per hour)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="12"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- MW value (active power) -->
+	<xs:simpleType name="MW_float">
+		<xs:annotation>
+			<xs:documentation>MW value (active power)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:float"/>
+	</xs:simpleType>
+	<xs:element name="Hour" type="imo:Hour1To24" nillable="false"/>
+	<xs:element name="Interval" type="imo:Interval1To12"/>
+</xs:schema>

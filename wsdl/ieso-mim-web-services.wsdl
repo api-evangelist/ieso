@@ -1,0 +1,815 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:emimd="http://webservices.ieso.ca/emim-types/"
+  xmlns:tns="http://webservices.ieso.ca/emim/"
+  name="emim-web-service"
+  targetNamespace="http://webservices.ieso.ca/emim/">
+
+  <wsdl:documentation>
+    MIM WSDL - Describes IESO MIM Web Service
+
+    Version: 2.0
+
+    History:
+    2.0 14-NOV-2022 Initial
+
+    This WSDL defines the operations provided the IESO MIM Web Service.
+
+    The service can be broken down into the following categories
+
+    - Market Status retrieval
+    - Market Message retrieval
+    - Resource retrieval
+    - Forebay retrieval
+    - Bid Query/retrieval
+    - Bid Cancel
+    - Bid Upload
+    - Act-As Market Participant list retrieval
+    - Web Service Health/Status retrieval
+
+    Descriptions of the schema types used within are described in the imported emim.xsd file.
+
+    Uses the input-output/request-response Web Service MEP pattern exclusively.
+
+    The following defines all the messages used by operations. 
+    For each operation, a separate 'input' and 'output' message is defined.
+    The use of 'input' and 'output' pertains to the service view; it receives
+    'input' messages and responds with 'output' messages.
+
+  </wsdl:documentation>
+
+  <wsdl:types>
+    <wsdl:documentation>all schema types used by this service are define in emim.xsd</wsdl:documentation>
+    <xsd:schema targetNamespace="http://webservices.ieso.ca/emim/">
+      <xsd:import namespace="http://webservices.ieso.ca/emim-types/" schemaLocation="emim.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+
+  <!-- The following defines the messages used by the Market Status retrieval operation. -->
+
+  <wsdl:message name="MarketStatusRequest">
+    <wsdl:documentation>input Market Status retrieval message</wsdl:documentation>
+    <wsdl:part element="emimd:MarketStatusQuery" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="MarketStatusResponse">
+    <wsdl:documentation>output Market Statue retrieval message</wsdl:documentation>
+    <wsdl:part element="emimd:MarketStatus" name="response"/>
+  </wsdl:message>
+
+  <!-- The following defines the messages used by the Market Message retrieval operation. -->
+
+  <wsdl:message name="MarketMessageRequest">
+    <wsdl:documentation>input Market Message retrieval message</wsdl:documentation>
+    <wsdl:part element="emimd:MarketMessageQuery" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="MarketMessageResponse">
+    <wsdl:documentation>output Market Message retrieval message</wsdl:documentation>
+    <wsdl:part element="emimd:MarketMessageSet" name="response"/>
+  </wsdl:message>
+
+  <!-- The following defines the messages used by the Resource retrieval operation. -->
+
+  <wsdl:message name="ResourceRequest">
+    <wsdl:documentation>input Resource retrieval message</wsdl:documentation>
+    <wsdl:part element="emimd:ResourceQuery" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="ResourceResponse">
+    <wsdl:documentation>output Resource retrieval message</wsdl:documentation>
+    <wsdl:part element="emimd:ResourceSet" name="response"/>
+  </wsdl:message>
+
+  <!-- The following defines the messages used by the Forebay retrieval operation. -->
+
+  <wsdl:message name="ForebayRequest">
+    <wsdl:documentation>input Forebay retrieval message</wsdl:documentation>
+    <wsdl:part element="emimd:ForebayQuery" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="ForebayResponse">
+    <wsdl:documentation>output Forebay retrieval message</wsdl:documentation>
+    <wsdl:part element="emimd:ForebaySet" name="response"/>
+  </wsdl:message>
+
+  <!--
+  The following defines the messages used by the Bid Query/retrieval operations.
+  Separate query operations exist for each bid type: Bilateral, DailyDispatch, ForeBay, OperatingReserve, RealtimeEnergy and Schedule.
+  -->
+
+  <wsdl:message name="BilateralBidQueryRequest">
+    <wsdl:documentation>input Bilateral Bid query message</wsdl:documentation>
+    <wsdl:part element="emimd:BilateralBidQuery" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="BilateralBidQueryResponse">
+    <wsdl:documentation>output Bilateral Bid query message</wsdl:documentation>
+    <wsdl:part element="emimd:BilateralBidSet" name="response"/>
+  </wsdl:message>
+
+  <wsdl:message name="DailyDispatchBidQueryRequest">
+    <wsdl:documentation>input Daily Dispatch Bid query message</wsdl:documentation>
+    <wsdl:part element="emimd:DailyDispatchBidQuery" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="DailyDispatchBidQueryResponse">
+    <wsdl:documentation>output Daily Dispatch Bid query message</wsdl:documentation>
+    <wsdl:part element="emimd:DailyDispatchBidSet" name="response"/>
+  </wsdl:message>
+
+  <wsdl:message name="ForebayBidQueryRequest">
+    <wsdl:documentation>input Forebay Bid query message</wsdl:documentation>
+    <wsdl:part element="emimd:ForebayBidQuery" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="ForebayBidQueryResponse">
+    <wsdl:documentation>output Forebay Bid query message</wsdl:documentation>
+    <wsdl:part element="emimd:ForebayBidSet" name="response"/>
+  </wsdl:message>
+
+  <wsdl:message name="OperatingReserveBidQueryRequest">
+    <wsdl:documentation>input Operating Reserve Bid query message</wsdl:documentation>
+    <wsdl:part element="emimd:OperatingReserveBidQuery" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="OperatingReserveBidQueryResponse">
+    <wsdl:documentation>output Operating Reserve Bid query message</wsdl:documentation>
+    <wsdl:part element="emimd:OperatingReserveBidSet" name="response"/>
+  </wsdl:message>
+
+  <wsdl:message name="RealtimeEnergyBidQueryRequest">
+    <wsdl:documentation>input Realtime Energy Bid query message</wsdl:documentation>
+    <wsdl:part element="emimd:RealtimeEnergyBidQuery" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="RealtimeEnergyBidQueryResponse">
+    <wsdl:documentation>output Realtime Energy Bid query message</wsdl:documentation>
+    <wsdl:part element="emimd:RealtimeEnergyBidSet" name="response"/>
+  </wsdl:message>
+
+  <wsdl:message name="ScheduleBidQueryRequest">
+    <wsdl:documentation>input Schedule Bid query message</wsdl:documentation>
+    <wsdl:part element="emimd:ScheduleBidQuery" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="ScheduleBidQueryResponse">
+    <wsdl:documentation>output Schedule Bid query message</wsdl:documentation>
+    <wsdl:part element="emimd:ScheduleBidSet" name="response"/>
+  </wsdl:message>
+
+  <!-- 
+  The following defines the messages used by the Bid cancel operations.
+  Separate cancel operations exist for each bid type: Bilateral, OperatingReserve, RealtimeEnergy and Schedule.
+
+  Note that all cancel operations return the same output message: BidCancelResponse.
+  -->
+
+  <wsdl:message name="BilateralBidCancelRequest">
+    <wsdl:documentation>input Bilateral Bid cancel message</wsdl:documentation>
+    <wsdl:part element="emimd:BilateralBidCancel" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="OperatingReserveBidCancelRequest">
+    <wsdl:documentation>input Operating Reserve Bid cancel message</wsdl:documentation>
+    <wsdl:part element="emimd:OperatingReserveBidCancel" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="RealtimeEnergyBidCancelRequest"> 
+    <wsdl:documentation>input Realtime Energy Bid cancel message</wsdl:documentation>
+    <wsdl:part element="emimd:RealtimeEnergyBidCancel" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="ScheduleBidCancelRequest">
+    <wsdl:documentation>input Schedule Bid cancel message</wsdl:documentation>
+    <wsdl:part element="emimd:ScheduleBidCancel" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="BidCancelResponse">
+    <wsdl:documentation>output Bid cancel message; common to all Bid cancel operations.</wsdl:documentation>
+    <wsdl:part element="emimd:BidProcessingStatus" name="response"/>
+  </wsdl:message>
+
+  <!--
+  The following defines the messages used by the Bid upload operations.
+  Separate upload operations exist for each bid type: Bilateral, DailyDispatch, ForeBay, OperatingReserve, RealtimeEnergy and Schedule.
+  
+  Note that all upload operations return the same output message: BidUploadResponse.
+  -->
+
+  <wsdl:message name="BilateralBidUploadRequest">
+    <wsdl:documentation>input Bilateral Bid upload message</wsdl:documentation>
+    <wsdl:part element="emimd:BilateralBidSubmit" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="DailyDispatchBidUploadRequest">
+    <wsdl:documentation>input Daily Dispatch Bid upload message</wsdl:documentation>
+    <wsdl:part element="emimd:DailyDispatchBidSubmit" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="ForebayBidUploadRequest">
+    <wsdl:documentation>input Forebay Bid upload message</wsdl:documentation>
+    <wsdl:part element="emimd:ForebayBidSubmit" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="OperatingReserveBidUploadRequest">
+    <wsdl:documentation>input Operating Reserve Bid upload message</wsdl:documentation>
+    <wsdl:part element="emimd:OperatingReserveBidSubmit" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="RealtimeEnergyBidUploadRequest">
+    <wsdl:documentation>input Realtime Energy Bid upload message</wsdl:documentation>
+    <wsdl:part element="emimd:RealtimeEnergyBidSubmit" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="ScheduleBidUploadRequest">
+    <wsdl:documentation>input Schedule Bid upload message</wsdl:documentation>
+    <wsdl:part element="emimd:ScheduleBidSubmit" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="BidUploadResponse">
+    <wsdl:documentation>output Bid upload message; common to all Bid upload operations.</wsdl:documentation>
+    <wsdl:part element="emimd:BidProcessingStatus" name="response"/>
+  </wsdl:message>
+
+  <wsdl:message name="SubmissionPartiallyRejectedFault">
+    <wsdl:documentation>output Bid upload messages for partially rejected submissions.</wsdl:documentation>
+    <wsdl:part element="emimd:BidProcessingStatus" name="response"/>
+  </wsdl:message>
+
+  <wsdl:message name="SubmissionFullyRejectedFault">
+    <wsdl:documentation>output Bid upload message for fully rejected submissions.</wsdl:documentation>
+    <wsdl:part element="emimd:BidProcessingStatus" name="response"/>
+  </wsdl:message>
+
+  <wsdl:message name="QueryFault">
+    <wsdl:documentation>output message for query failures.</wsdl:documentation>
+    <wsdl:part element="emimd:QueryFault" name="response"/>
+  </wsdl:message>
+
+  <!--
+  The following defines the messages used by the Act-As Market Participant list retrieval operation.
+  The list represents all Market Participants the currently logged-in user can act on behalf of.
+  -->
+
+  <wsdl:message name="ActAsMarketParticipantRequest">
+    <wsdl:documentation>input Act-As Market Participant list retrieval message</wsdl:documentation>
+    <wsdl:part element="emimd:ActAsMarketParticipantQuery" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="ActAsMarketParticipantResponse">
+    <wsdl:documentation>output Act-As Market Participant list retrieval message</wsdl:documentation>
+    <wsdl:part element="emimd:ActAsMarketParticipantSet" name="response"/>
+  </wsdl:message>
+
+  <!-- The following defines the messages used by the Web Service Health/Status retrieval operation. -->
+
+  <wsdl:message name="HealthCheckRequest">
+    <wsdl:documentation>input Web Service Health/Status retrieval message</wsdl:documentation>
+    <wsdl:part element="emimd:HealthCheckQuery" name="request"/>
+  </wsdl:message>
+
+  <wsdl:message name="HealthCheckResponse">
+    <wsdl:documentation>output Web Service Health/Status retrieval message</wsdl:documentation>
+    <wsdl:part element="emimd:HealthCheckInfo" name="response"/>
+  </wsdl:message>
+
+  <!-- The following defines the input/output message associations corresponding to each operation. -->
+
+  <wsdl:portType name="emim-web-service">
+
+    <wsdl:operation name="MarketStatusOperation">
+      <wsdl:documentation>input/output messages associated with the Market Status retrieval operation</wsdl:documentation>
+      <wsdl:input message="tns:MarketStatusRequest"/>
+      <wsdl:output message="tns:MarketStatusResponse"/>
+      <wsdl:fault message="tns:QueryFault" name="QueryFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="MarketMessageOperation">
+      <wsdl:documentation>input/output messages associated with the Market Message retrieval operation</wsdl:documentation>
+      <wsdl:input message="tns:MarketMessageRequest"/>
+      <wsdl:output message="tns:MarketMessageResponse"/>
+      <wsdl:fault message="tns:QueryFault" name="QueryFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="ResourceOperation">
+      <wsdl:documentation>input/output messages associated with the Resource retrieval operation</wsdl:documentation>
+      <wsdl:input message="tns:ResourceRequest"/>
+      <wsdl:output message="tns:ResourceResponse"/>
+      <wsdl:fault message="tns:QueryFault" name="QueryFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="ForebayOperation">
+      <wsdl:documentation>input/output messages associated with the Forebay retrieval operation</wsdl:documentation>
+      <wsdl:input message="tns:ForebayRequest"/>
+      <wsdl:output message="tns:ForebayResponse"/>
+      <wsdl:fault message="tns:QueryFault" name="QueryFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="BilateralBidQueryOperation">
+      <wsdl:documentation>input/output messages associated with the Bilateral Bid query operation</wsdl:documentation>
+      <wsdl:input message="tns:BilateralBidQueryRequest"/>
+      <wsdl:output message="tns:BilateralBidQueryResponse"/>
+      <wsdl:fault message="tns:QueryFault" name="QueryFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="DailyDispatchBidQueryOperation">
+      <wsdl:documentation>input/output messages associated with the Daily Dispatch Bid query operation</wsdl:documentation>
+      <wsdl:input message="tns:DailyDispatchBidQueryRequest"/>
+      <wsdl:output message="tns:DailyDispatchBidQueryResponse"/>
+      <wsdl:fault message="tns:QueryFault" name="QueryFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="ForebayBidQueryOperation">
+      <wsdl:documentation>input/output messages associated with the Forebay Bid query operation</wsdl:documentation>
+      <wsdl:input message="tns:ForebayBidQueryRequest"/>
+      <wsdl:output message="tns:ForebayBidQueryResponse"/>
+      <wsdl:fault message="tns:QueryFault" name="QueryFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="OperatingReserveBidQueryOperation">
+      <wsdl:documentation>input/output messages associated with the Operating Reserve Bid query operation</wsdl:documentation>
+      <wsdl:input message="tns:OperatingReserveBidQueryRequest"/>
+      <wsdl:output message="tns:OperatingReserveBidQueryResponse"/>
+      <wsdl:fault message="tns:QueryFault" name="QueryFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="RealtimeEnergyBidQueryOperation">
+      <wsdl:documentation>input/output messages associated with the Realtime Energy Bid query operation</wsdl:documentation>
+      <wsdl:input message="tns:RealtimeEnergyBidQueryRequest"/>
+      <wsdl:output message="tns:RealtimeEnergyBidQueryResponse"/>
+      <wsdl:fault message="tns:QueryFault" name="QueryFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="ScheduleBidQueryOperation">
+      <wsdl:documentation>input/output messages associated with the Schedule Bid query operation</wsdl:documentation>
+      <wsdl:input message="tns:ScheduleBidQueryRequest"/>
+      <wsdl:output message="tns:ScheduleBidQueryResponse"/>
+      <wsdl:fault message="tns:QueryFault" name="QueryFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="BilateralBidCancelOperation">
+      <wsdl:documentation>input/output messages associated with the Bilateral Bid cancel operation</wsdl:documentation>
+      <wsdl:input message="tns:BilateralBidCancelRequest"/>
+      <wsdl:output message="tns:BidCancelResponse"/>
+      <wsdl:fault message="tns:SubmissionPartiallyRejectedFault" name="SubmissionPartiallyRejectedFault"/>
+      <wsdl:fault message="tns:SubmissionFullyRejectedFault" name="SubmissionFullyRejectedFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="OperatingReserveBidCancelOperation">
+      <wsdl:documentation>input/output messages associated with the Operating Reserve Bid cancel operation</wsdl:documentation>
+      <wsdl:input message="tns:OperatingReserveBidCancelRequest"/>
+      <wsdl:output message="tns:BidCancelResponse"/>
+      <wsdl:fault message="tns:SubmissionPartiallyRejectedFault" name="SubmissionPartiallyRejectedFault"/>
+      <wsdl:fault message="tns:SubmissionFullyRejectedFault" name="SubmissionFullyRejectedFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="RealtimeEnergyBidCancelOperation">
+      <wsdl:documentation>input/output messages associated with the Realtime Energy Bid cancel operation</wsdl:documentation>
+      <wsdl:input message="tns:RealtimeEnergyBidCancelRequest"/>
+      <wsdl:output message="tns:BidCancelResponse"/>
+      <wsdl:fault message="tns:SubmissionPartiallyRejectedFault" name="SubmissionPartiallyRejectedFault"/>
+      <wsdl:fault message="tns:SubmissionFullyRejectedFault" name="SubmissionFullyRejectedFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="ScheduleBidCancelOperation">
+      <wsdl:documentation>input/output messages associated with the Schedule Bid cancel operation</wsdl:documentation>
+      <wsdl:input message="tns:ScheduleBidCancelRequest"/>
+      <wsdl:output message="tns:BidCancelResponse"/>
+      <wsdl:fault message="tns:SubmissionPartiallyRejectedFault" name="SubmissionPartiallyRejectedFault"/>
+      <wsdl:fault message="tns:SubmissionFullyRejectedFault" name="SubmissionFullyRejectedFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="BilateralBidUploadOperation">
+      <wsdl:documentation>input/output messages associated with the Bilateral Bid upload operation</wsdl:documentation>
+      <wsdl:input message="tns:BilateralBidUploadRequest"/>
+      <wsdl:output message="tns:BidUploadResponse"/>
+      <wsdl:fault message="tns:SubmissionPartiallyRejectedFault" name="SubmissionPartiallyRejectedFault"/>
+      <wsdl:fault message="tns:SubmissionFullyRejectedFault" name="SubmissionFullyRejectedFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="DailyDispatchBidUploadOperation">
+      <wsdl:documentation>
+        - input/output messages associated with the Daily Dispatch Bid upload operation.
+        - SubmissionPartiallyRejectedFault is not used for DailyDispatchBidUploadOperation.
+      </wsdl:documentation>
+      <wsdl:input message="tns:DailyDispatchBidUploadRequest"/>
+      <wsdl:output message="tns:BidUploadResponse"/>
+      <wsdl:fault message="tns:SubmissionPartiallyRejectedFault" name="SubmissionPartiallyRejectedFault"/>
+      <!-- SubmissionPartiallyRejectedFault is not used for DailyDispatch Bid upload operation. -->
+      <wsdl:fault message="tns:SubmissionFullyRejectedFault" name="SubmissionFullyRejectedFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="ForebayBidUploadOperation">
+      <wsdl:documentation>input/output messages associated with the Forebay Bid upload operation</wsdl:documentation>
+      <wsdl:input message="tns:ForebayBidUploadRequest"/>
+      <wsdl:output message="tns:BidUploadResponse"/>
+      <wsdl:fault message="tns:SubmissionPartiallyRejectedFault" name="SubmissionPartiallyRejectedFault"/>
+      <wsdl:fault message="tns:SubmissionFullyRejectedFault" name="SubmissionFullyRejectedFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="OperatingReserveBidUploadOperation">
+      <wsdl:documentation>input/output messages associated with the Operating Reserve Bid upload operation</wsdl:documentation>
+      <wsdl:input message="tns:OperatingReserveBidUploadRequest"/>
+      <wsdl:output message="tns:BidUploadResponse"/>
+      <wsdl:fault message="tns:SubmissionPartiallyRejectedFault" name="SubmissionPartiallyRejectedFault"/>
+      <wsdl:fault message="tns:SubmissionFullyRejectedFault" name="SubmissionFullyRejectedFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="RealtimeEnergyBidUploadOperation">
+      <wsdl:documentation>input/output messages associated with the Realtime Energy Bid upload operation</wsdl:documentation>
+      <wsdl:input message="tns:RealtimeEnergyBidUploadRequest"/>
+      <wsdl:output message="tns:BidUploadResponse"/>
+      <wsdl:fault message="tns:SubmissionPartiallyRejectedFault" name="SubmissionPartiallyRejectedFault"/>
+      <wsdl:fault message="tns:SubmissionFullyRejectedFault" name="SubmissionFullyRejectedFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="ScheduleBidUploadOperation">
+      <wsdl:documentation>input/output messages associated with the Schedule Bid upload operation</wsdl:documentation>
+      <wsdl:input message="tns:ScheduleBidUploadRequest"/>
+      <wsdl:output message="tns:BidUploadResponse"/>
+      <wsdl:fault message="tns:SubmissionPartiallyRejectedFault" name="SubmissionPartiallyRejectedFault"/>
+      <wsdl:fault message="tns:SubmissionFullyRejectedFault" name="SubmissionFullyRejectedFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="ActAsMarketParticipantOperation">
+      <wsdl:documentation>input/output messages associated with the Act-As Market Participant list retrieval operation</wsdl:documentation>
+      <wsdl:input message="tns:ActAsMarketParticipantRequest"/>
+      <wsdl:output message="tns:ActAsMarketParticipantResponse"/>
+      <wsdl:fault message="tns:QueryFault" name="QueryFault"/>
+    </wsdl:operation>
+
+    <wsdl:operation name="HealthCheckOperation">
+      <wsdl:documentation>input/output messages associated with the Web Service Health/Status retrieval operation</wsdl:documentation>
+      <wsdl:input message="tns:HealthCheckRequest"/>
+      <wsdl:output message="tns:HealthCheckResponse"/>
+    </wsdl:operation>
+
+  </wsdl:portType>
+
+  <!--
+  The following defines the SOAP bindings used by all operations.
+  Uses "document" style with the HTTP SOAP protocol.
+  -->
+
+  <wsdl:binding name="emim-web-serviceSOAP" type="tns:emim-web-service">
+
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+    <wsdl:operation name="MarketStatusOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Market Status retrieval operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/marketstatus"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="QueryFault">
+        <soap:fault name="QueryFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="MarketMessageOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Market Message retrieval operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/marketmessages"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="QueryFault">
+        <soap:fault name="QueryFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="ResourceOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Resource retrieval operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/resources"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="QueryFault">
+        <soap:fault name="QueryFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="ForebayOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Forebay retrieval operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/forebays"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="QueryFault">
+        <soap:fault name="QueryFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="BilateralBidQueryOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Bilateral Bid query operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/emim/bilateralbidquery"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="QueryFault">
+        <soap:fault name="QueryFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="DailyDispatchBidQueryOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Daily Dispatch Bid query operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/emim/dailydispatchbidquery"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="QueryFault">
+        <soap:fault name="QueryFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="ForebayBidQueryOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Forebay Bid query operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/emim/forebaybidquery"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="QueryFault">
+        <soap:fault name="QueryFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="OperatingReserveBidQueryOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Operating Reserve Bid query operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/emim/operatingreservebidquery"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="QueryFault">
+        <soap:fault name="QueryFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="RealtimeEnergyBidQueryOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Realtime Energy Bid upload operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/emim/realtimeenergybidquery"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="QueryFault">
+        <soap:fault name="QueryFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="ScheduleBidQueryOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Schedule Bid query operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/emim/schedulebidquery"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="QueryFault">
+        <soap:fault name="QueryFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="BilateralBidCancelOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Bilateral Bid cancel operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/bilateralbidcancel"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="SubmissionPartiallyRejectedFault">
+        <soap:fault name="SubmissionPartiallyRejectedFault" use="literal" />
+      </wsdl:fault>
+      <wsdl:fault name="SubmissionFullyRejectedFault">
+        <soap:fault name="SubmissionFullyRejectedFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="OperatingReserveBidCancelOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Operating Reserve Bid cancel operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/operatingreservebidcancel"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="SubmissionPartiallyRejectedFault">
+        <soap:fault name="SubmissionPartiallyRejectedFault" use="literal" />
+      </wsdl:fault>
+      <wsdl:fault name="SubmissionFullyRejectedFault">
+        <soap:fault name="SubmissionFullyRejectedFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="RealtimeEnergyBidCancelOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Realtime Energy Bid cancel operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/realtimeenergybidcancel"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="SubmissionPartiallyRejectedFault">
+        <soap:fault name="SubmissionPartiallyRejectedFault" use="literal" />
+      </wsdl:fault>
+      <wsdl:fault name="SubmissionFullyRejectedFault">
+        <soap:fault name="SubmissionFullyRejectedFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="ScheduleBidCancelOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Schedule Bid cancel operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/schedulebidcancel"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="SubmissionPartiallyRejectedFault">
+        <soap:fault name="SubmissionPartiallyRejectedFault" use="literal" />
+      </wsdl:fault>
+      <wsdl:fault name="SubmissionFullyRejectedFault">
+        <soap:fault name="SubmissionFullyRejectedFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="BilateralBidUploadOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Bilateral Bid upload operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/bilateralbidupload"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="SubmissionPartiallyRejectedFault">
+        <soap:fault name="SubmissionPartiallyRejectedFault" use="literal" />
+      </wsdl:fault>
+      <wsdl:fault name="SubmissionFullyRejectedFault">
+        <soap:fault name="SubmissionFullyRejectedFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="DailyDispatchBidUploadOperation">
+      <wsdl:documentation>
+       - endpoint and encoding associated with the Daily Dispatch Bid upload operation
+       - SubmissionPartiallyRejectedFault is not used for Daily Dispatch Bid upload operation.
+      </wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/dailydispatchbidupload"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="SubmissionPartiallyRejectedFault">
+        <soap:fault name="SubmissionPartiallyRejectedFault" use="literal" />
+      </wsdl:fault> 
+      <!-- SubmissionPartiallyRejectedFault is not used for Daily Dispatch Bid upload operation. -->
+      <wsdl:fault name="SubmissionFullyRejectedFault">
+        <soap:fault name="SubmissionFullyRejectedFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="ForebayBidUploadOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Forebay Bid upload operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/forebaybidupload"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="SubmissionPartiallyRejectedFault">
+        <soap:fault name="SubmissionPartiallyRejectedFault" use="literal" />
+      </wsdl:fault>
+      <wsdl:fault name="SubmissionFullyRejectedFault">
+        <soap:fault name="SubmissionFullyRejectedFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="OperatingReserveBidUploadOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Operating Reserve Bid upload operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/operatingreservebidupload"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="SubmissionPartiallyRejectedFault">
+        <soap:fault name="SubmissionPartiallyRejectedFault" use="literal" />
+      </wsdl:fault>
+      <wsdl:fault name="SubmissionFullyRejectedFault">
+        <soap:fault name="SubmissionFullyRejectedFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="RealtimeEnergyBidUploadOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Realtime Energy Bid upload operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/realtimeenergybidupload"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="SubmissionPartiallyRejectedFault">
+        <soap:fault name="SubmissionPartiallyRejectedFault" use="literal" />
+      </wsdl:fault>
+      <wsdl:fault name="SubmissionFullyRejectedFault">
+        <soap:fault name="SubmissionFullyRejectedFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="ScheduleBidUploadOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Schedule Bid upload operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/schedulebidupload"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="SubmissionPartiallyRejectedFault">
+        <soap:fault name="SubmissionPartiallyRejectedFault" use="literal" />
+      </wsdl:fault>
+      <wsdl:fault name="SubmissionFullyRejectedFault">
+        <soap:fault name="SubmissionFullyRejectedFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="ActAsMarketParticipantOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Act-As Market Participant list retrieval operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/mpsrequest"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="QueryFault">
+        <soap:fault name="QueryFault" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+
+    <wsdl:operation name="HealthCheckOperation">
+      <wsdl:documentation>endpoint and encoding associated with the Web Service Health/Status retrieval operation</wsdl:documentation>
+      <soap:operation soapAction="http://webservices.ieso.ca/emim/healthcheck"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+  </wsdl:binding>
+
+  <wsdl:service name="emim-web-service">
+    <wsdl:documentation>
+    The following defines the public service name which exposes the binding defined above:
+    - service name: emim-web-service
+    - binding: emim-web-serviceSOAP
+    - URL: http://webservices.ieso.ca/emim/
+    </wsdl:documentation>
+    <wsdl:port binding="tns:emim-web-serviceSOAP" name="emim-web-serviceSOAP">
+      <soap:address location="http://webservices.ieso.ca/emim/"/>
+    </wsdl:port>
+  </wsdl:service>
+
+</wsdl:definitions>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DACP Predispatch Price XML Schema -->
+<xs:schema xmlns="http://www.ieso.ca/schema" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.ieso.ca/schema" elementFormDefault="qualified">
+	<!-- Following stuff is report specific -->
+	<xs:include schemaLocation="Document_r1.xsd"/>
+	<xs:element name="DocBody">
+		<xs:annotation>
+			<xs:documentation>Document Body</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="DeliveryDate" type="xs:date">
+					<xs:annotation>
+						<xs:documentation>The Date for which this DACP data applies</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="IntertieZonalPrices" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="IntertieZoneName" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>The Zone Name for which the MCP price applies</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Prices" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="PriceType" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>Type of Price (Energy, 10N, 10S, 30R etc.)</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="HourlyPrices">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="HourlyPrice" maxOccurs="24">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="DeliveryHour" type="Hour1To24">
+																	<xs:annotation>
+																		<xs:documentation>The Hour for which this DACP data applies (1 to 24)</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="MCP" type="Money">
+																	<xs:annotation>
+																		<xs:documentation>Market clearing Price ($)</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Delivery hour indicates hour ending at (1 to 24)-->
+	<xs:simpleType name="Hour1To24">
+		<xs:annotation>
+			<xs:documentation>The Hour for which this DACP data applies (1 to 24)</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="24"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Price - 2 decimals -->
+	<xs:simpleType name="Money">
+		<xs:annotation>
+			<xs:documentation>Money - 2 decimals</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

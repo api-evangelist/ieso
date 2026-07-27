@@ -1,0 +1,996 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:tns="http://webservices.ieso.ca/emim-types/"
+  targetNamespace="http://webservices.ieso.ca/emim-types/"
+  elementFormDefault="qualified">
+
+  <xs:annotation>
+    <xs:documentation xml:lang="en">
+      This is the XML schema for IESO MIM data.
+
+      History:
+      2.0 14-NOV-2022 Initial
+      2.1 15-DEC-2022 Add ResourceBidType and ResourceTypeId to ResType
+      2.2 26-APR-2023 Change ReasonCodeType to allow 1 character Reason
+      2.3 02-AUG-2023 Add Pattern Restriction for Key String Fields
+      2.4 13-OCT-2023 Update Pattern Restriction for Virtual Zone Name
+      2.5 22-NOV-2023 Increase MaxNumOfStartsPerDay size from 999 to 9999
+      2.6 26-FEB-2024 ADO 27754 - Add PRL to ResourceBidTypeType, remove PRL from ResourceTypeIdType
+    </xs:documentation>
+  </xs:annotation>
+
+  <!-- BEGIN: Schema Version Information -->
+
+  <xs:complexType name="VersionType">
+    <xs:sequence>
+      <xs:element name="Major" type="xs:int" />
+      <xs:element name="Minor" type="xs:int" />
+      <xs:element name="Patch" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- END: Schema Version Information -->
+
+
+  <!-- BEGIN: Simple Type Definitions -->
+  <!-- Enumerations -->
+  <xs:simpleType name="SeverityType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="INFO"/>
+      <xs:enumeration value="WARN"/>
+      <xs:enumeration value="ERROR"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="MessageClassType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NORMAL"/>
+      <xs:enumeration value="URGENT"/>
+      <xs:enumeration value="EMERGENCY"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="BidCategoryType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="BILATERAL"/>
+      <xs:enumeration value="DDD"/>
+      <xs:enumeration value="OPERATING-RESERVE"/>
+      <xs:enumeration value="RTEM"/>
+      <xs:enumeration value="SCHEDULE"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="DayOfWeekType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="MON"/>
+      <xs:enumeration value="TUE"/>
+      <xs:enumeration value="WED"/>
+      <xs:enumeration value="THU"/>
+      <xs:enumeration value="FRI"/>
+      <xs:enumeration value="SAT"/>
+      <xs:enumeration value="SUN"/>
+      <xs:enumeration value="ALL"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ResourceTypeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NQS_NUCLEAR"/>
+      <xs:enumeration value="NQS_OTHER"/>
+      <xs:enumeration value="QS_OTHER"/>
+      <xs:enumeration value="PSEUDO_UNIT"/>
+      <xs:enumeration value="COMBUSTION_TURBINE_PSU"/>
+      <xs:enumeration value="STEAM_TURBINE_PSU"/>
+      <xs:enumeration value="COMBUSTION_TURBINE_NON_PSU"/>
+      <xs:enumeration value="STEAM_TURBINE_NON_PSU"/>
+      <xs:enumeration value="HYDRO_CASCADE"/>
+      <xs:enumeration value="HYDRO_NON_CASCADE"/>
+      <xs:enumeration value="VARIABLE_GENERATION"/>
+      <xs:enumeration value="NON_DISPATCHABLE_GENERATION"/>
+      <xs:enumeration value="NON_DISPATCHABLE_LOAD"/>
+      <xs:enumeration value="DISPATCHABLE_LOAD"/>
+      <xs:enumeration value="HOURLY_DEMAND_RESPONSE"/>
+      <xs:enumeration value="PRICE_RESPONSIVE_LOAD"/>
+      <xs:enumeration value="VIRTUAL_TRADER_SUPPLY"/>
+      <xs:enumeration value="VIRTUAL_TRADER_LOAD"/>
+      <xs:enumeration value="ENERGY_IMPORT"/>
+      <xs:enumeration value="ENERGY_EXPORT"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ResourceBidTypeType">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        IGEN - Intermittent Generator
+        NDLD - Non-Dispatchable Load
+        REG  - Regulation
+        SELF - Self Scheduling Generator
+        VIRTUAL - Virtual Gen/Load
+        PRL - Price Responsive Load
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="REG"/>
+      <xs:enumeration value="SELF"/>
+      <xs:enumeration value="IGEN"/>
+      <xs:enumeration value="NDLD"/>
+      <xs:enumeration value="VIRTUAL"/>
+      <xs:enumeration value="PRL"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ResourceTypeIdType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="GEN"/>
+      <xs:enumeration value="LOAD"/>
+      <xs:enumeration value="MSP"/>
+      <xs:enumeration value="CSP_SINK"/>
+      <xs:enumeration value="CSP_SOURCE"/>
+      <xs:enumeration value="PSU"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="EnergyBidOfferType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="GENERATOR"/>
+      <xs:enumeration value="LOAD"/>
+      <xs:enumeration value="PSEUDO-UNIT"/>
+      <xs:enumeration value="PRICE-RESPONSIVE-LOAD"/>
+      <xs:enumeration value="VIRTUAL-GENERATOR"/>
+      <xs:enumeration value="VIRTUAL-LOAD"/>
+      <xs:enumeration value="OFF-TAKE"/>
+      <xs:enumeration value="INJECTION"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ReserveBidOfferType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="GENERATOR"/>
+      <xs:enumeration value="DISPLOAD"/>
+      <xs:enumeration value="PSEUDO-UNIT"/>
+      <xs:enumeration value="OFF-TAKE"/>
+      <xs:enumeration value="INJECTION"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ReserveClassType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="10S"/>
+      <xs:enumeration value="10N"/>
+      <xs:enumeration value="30R"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ScheduleTypeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="SELFGEN"/>
+      <xs:enumeration value="INTGEN"/>
+      <xs:enumeration value="NONDLOAD"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="WindowNameType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="HOURLY_INITIAL"/>
+      <xs:enumeration value="HOURLY_RESTRICTED"/>
+      <xs:enumeration value="HOURLY_UNRESTRICTED1"/>
+      <xs:enumeration value="HOURLY_UNRESTRICTED2"/>
+      <xs:enumeration value="HOURLY_MANDATORY"/>
+      <xs:enumeration value="HOURLY_CLOSE"/>
+      <xs:enumeration value="DAILY_INITIAL"/>
+      <xs:enumeration value="DAILY_RESTRICTED"/>
+      <xs:enumeration value="DAILY_MANDATORY"/>
+      <xs:enumeration value="DAILY_CLOSE"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="ThermalStateType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="HOT"/>
+      <xs:enumeration value="WARM"/>
+      <xs:enumeration value="COLD"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="MarketTypeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="DAY-AHEAD"/>
+      <xs:enumeration value="REALTIME"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <!-- String/Numeric Types -->
+  <xs:simpleType name="TransactionIdType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="6"/>
+      <xs:maxLength value="10"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ParticipantType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="2"/>
+      <xs:maxLength value="12"/>
+      <xs:pattern value="[a-zA-Z0-9]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="UserType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="2"/>
+      <xs:maxLength value="12"/>
+      <xs:pattern value="[a-zA-Z0-9]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ResourceNameType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="2"/>
+      <xs:maxLength value="32"/>
+      <xs:pattern value="[a-zA-Z_0-9.:\-]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="ForebayNameType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="2"/>
+      <xs:maxLength value="32"/>
+      <xs:pattern value="[a-zA-Z0-9]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="TiePointType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="2"/>
+      <xs:maxLength value="32"/>
+      <xs:pattern value="[a-zA-Z0-9]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="VirtualZoneNameType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="2"/>
+      <xs:maxLength value="32"/>
+      <xs:pattern value="[a-zA-Z_0-9.:\-]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="ReasonCodeType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+      <xs:maxLength value="12"/>
+      <xs:pattern value="[a-zA-Z_0-9.:\-]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="OtherReasonType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="2"/>
+      <xs:maxLength value="128"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="NercTagType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="2"/>
+      <xs:maxLength value="32"/>
+      <xs:pattern value="[a-zA-Z_0-9.:\-]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="HourType">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="24"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="HourMin0Type">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="24"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PosValue2.0Min0Type">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="99"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PosValue3.0Min1Type">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="999"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PosValue4.0Min0Type">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="9999"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PosValue4.0Min1Type">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="9999"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="PosValue4.1Min0Type">
+    <xs:restriction base="xs:decimal">
+      <xs:minInclusive value="0.0"/>
+      <xs:maxInclusive value="999.9"/>
+      <xs:fractionDigits value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="PosValue5.1Min0Type"> 
+    <xs:restriction base="xs:decimal">
+      <xs:minInclusive value="0.0"/>
+      <xs:maxInclusive value="9999.9"/>
+      <xs:fractionDigits value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PosValue5.1Min0.1Type"> 
+    <xs:restriction base="xs:decimal">
+      <xs:minInclusive value="0.1"/>
+      <xs:maxInclusive value="9999.9"/>
+      <xs:fractionDigits value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="PosValue6.0Min0Type">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="999999"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PosValue6.2Min0Type">
+    <xs:restriction base="xs:decimal">
+      <xs:minInclusive value="0.0"/>
+      <xs:maxInclusive value="9999.99"/>
+      <xs:fractionDigits value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="NegPosValue6.2Type">
+    <xs:restriction base="xs:decimal">
+      <xs:minInclusive value="-9999.99"/>
+      <xs:maxInclusive value="9999.99"/>
+      <xs:fractionDigits value="2"/>
+    </xs:restriction>
+  </xs:simpleType> 
+  
+  <xs:simpleType name="PosValue7.1Min0Type">
+    <xs:restriction base="xs:decimal">
+      <xs:minInclusive value="0.0"/>
+      <xs:maxInclusive value="999999.9"/>
+      <xs:fractionDigits value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- END: Simple Type Definitions -->
+
+
+  <!-- BEGIN: Common Complex Type Definitions -->
+  <xs:complexType name="ActAsMarketParticipantType">
+    <xs:sequence>
+      <xs:element name="Participant" type="tns:ParticipantType"/>
+      <xs:element name="User" type="tns:UserType"/>
+      <xs:element name="ReadOnly" type="xs:boolean" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="UploadDateType">
+    <xs:choice>
+      <xs:element name="DeliveryDate" type="xs:date"/>
+      <xs:element name="Standing" type="tns:UploadStandingType"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="QueryDateType">
+    <xs:choice>
+      <xs:element name="DeliveryDate" type="xs:date"/>
+      <xs:element name="Standing" type="tns:QueryStandingType"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="UploadStandingType">
+    <xs:sequence>
+      <xs:element name="DayOfWeek" type="tns:DayOfWeekType"/>
+      <xs:element name="ExpiryDate" type="xs:date" minOccurs="0" default="5000-12-31"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="QueryStandingType">
+    <xs:sequence>
+      <xs:element name="DayOfWeek" type="tns:DayOfWeekType"/>
+      <xs:element name="ExpiryDate" type="xs:date" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DailyEnergyRampRateType">
+    <xs:sequence>
+      <xs:element name="DailyEnergyRampRateBreakpoint" type="tns:PosValue5.1Min0.1Type"/>
+      <xs:element name="DailyEnergyRampRateUp" type="tns:PosValue4.1Min0Type"/>
+      <xs:element name="DailyEnergyRampRateDown" type="tns:PosValue4.1Min0Type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="StartUpOfferType">
+    <xs:sequence>
+      <xs:element name="StartUpOfferHot" type="tns:PosValue6.0Min0Type" minOccurs="0"/>
+      <xs:element name="StartUpOfferWarm" type="tns:PosValue6.0Min0Type" minOccurs="0"/>
+      <xs:element name="StartUpOfferCold" type="tns:PosValue6.0Min0Type" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="HourlyEnergyRampRateType">
+    <xs:sequence>
+      <xs:element name="HourlyEnergyRampRateBreakpoint" type="tns:PosValue5.1Min0.1Type"/>
+      <xs:element name="HourlyEnergyRampRateUp" type="tns:PosValue4.1Min0Type"/>
+      <xs:element name="HourlyEnergyRampRateDown" type="tns:PosValue4.1Min0Type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ForbiddenRegionType">
+    <xs:sequence>
+      <xs:element name="LowerBound" type="tns:PosValue4.1Min0Type"/>
+      <xs:element name="UpperBound" type="tns:PosValue4.1Min0Type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MinGenBlockDownTimeType">
+    <xs:sequence>
+      <xs:element name="MinGenBlockDownTimeHot" type="tns:HourMin0Type"/>
+      <xs:element name="MinGenBlockDownTimeWarm" type="tns:PosValue2.0Min0Type"/>
+      <xs:element name="MinGenBlockDownTimeCold" type="tns:PosValue2.0Min0Type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="LeadTimeType">
+    <xs:sequence>
+      <xs:element name="LeadTimeHot" type="tns:HourMin0Type"/>
+      <xs:element name="LeadTimeWarm" type="tns:HourMin0Type"/>
+      <xs:element name="LeadTimeCold" type="tns:HourMin0Type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RampUpEnergyToMlpType">
+    <xs:sequence>
+      <xs:element name="RampUpEnergyToMlpHot" type="tns:RampUpToMlpHotType" minOccurs="0"/>
+      <xs:element name="RampUpEnergyToMlpWarm" type="tns:RampUpToMlpWarmType" minOccurs="0"/>
+      <xs:element name="RampUpEnergyToMlpCold" type="tns:RampUpToMlpColdType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RampUpToMlpHotType">
+    <xs:sequence>
+      <xs:element name="EnergyPerRampHourHot" type="tns:PosValue5.1Min0Type" minOccurs="1" maxOccurs="12"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RampUpToMlpWarmType">
+    <xs:sequence>
+      <xs:element name="EnergyPerRampHourWarm" type="tns:PosValue5.1Min0Type" minOccurs="1" maxOccurs="12"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RampUpToMlpColdType">
+    <xs:sequence>
+      <xs:element name="EnergyPerRampHourCold" type="tns:PosValue5.1Min0Type" minOccurs="1" maxOccurs="12"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="LinkedForebayType">
+    <xs:sequence>
+      <xs:element name="DownstreamForebayName" type="tns:ForebayNameType"/>
+      <xs:element name="TimeLag" type="tns:PosValue4.0Min0Type"/>
+      <xs:element name="MwRatio" type="tns:PosValue6.2Min0Type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PriceQuantityType">
+    <xs:sequence>
+      <xs:element name="Price" type="tns:NegPosValue6.2Type"/>
+      <xs:element name="Quantity" type="tns:PosValue5.1Min0Type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ResType">
+    <xs:sequence>
+      <xs:element name="ResourceName" type="tns:ResourceNameType"/>
+      <xs:element name="ResourceType" type="tns:ResourceTypeType"/>
+      <xs:element name="ResourceBidType" type="tns:ResourceBidTypeType"/>
+      <xs:element name="ResourceTypeId" type="tns:ResourceTypeIdType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MarketDetailType">
+    <xs:sequence>
+      <xs:element name="WindowName" type="tns:WindowNameType"/>
+      <xs:element name="StartTime" type="xs:dateTime"/>
+      <xs:element name="Active" type="xs:boolean"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MarketWindowType">
+    <xs:sequence>
+      <xs:element name="MarketType" type="tns:MarketTypeType"/>
+	  <xs:element name="MarketHour" type="xs:dateTime"/>
+      <xs:element name="Market" type="tns:MarketDetailType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MarketMessageType">
+    <xs:sequence>
+      <xs:element name="MessageTime" type="xs:dateTime"/>
+      <xs:element name="MessageClass" type="tns:MessageClassType"/>
+      <xs:element name="MessageText" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MessageType">
+    <xs:sequence>
+      <xs:element name="Severity" type="tns:SeverityType"/>
+      <xs:element name="Code" type="xs:string"/>
+      <xs:element name="Description" type="xs:string"/>
+      <xs:element name="Hour" type="tns:HourType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <!-- END: Common Complex Type Definitions -->
+
+
+  <!-- BEGIN: Submit Complex Type Definitions -->
+  <xs:complexType name="RealtimeEnergySubmitHourlyType">
+    <xs:sequence>
+      <xs:element name="Hour" type="tns:HourType"/>
+      <xs:element name="TiePoint" type="tns:TiePointType" minOccurs="0"/>
+      <xs:element name="VirtualZoneName" type="tns:VirtualZoneNameType" minOccurs="0"/>
+      <xs:element name="NercTag" type="tns:NercTagType" minOccurs="0"/>
+      <xs:element name="CapacityTransaction" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="OperatingReserveRampRate" type="tns:PosValue4.1Min0Type" minOccurs="0"/>
+      <xs:element name="StartUpOffer" type="tns:StartUpOfferType" minOccurs="0"/>
+      <xs:element name="SpeedNoLoadOffer" type="tns:PosValue6.0Min0Type" minOccurs="0"/>
+      <xs:element name="MinHourlyOutput" type="tns:PosValue5.1Min0Type" minOccurs="0"/>
+      <xs:element name="HourlyMustRun" type="tns:PosValue5.1Min0Type" minOccurs="0"/>
+      <xs:element name="ForecastQuantity" type="tns:PosValue5.1Min0Type" minOccurs="0"/>
+      <xs:element name="PriceQuantity" type="tns:PriceQuantityType" minOccurs="2" maxOccurs="20"/>
+      <xs:element name="HourlyEnergyRampRate" type="tns:HourlyEnergyRampRateType" minOccurs="0" maxOccurs="5"/>
+      <xs:element name="Reason" type="tns:ReasonCodeType" minOccurs="0"/>
+      <xs:element name="OtherReason" type="tns:OtherReasonType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="OperatingReserveSubmitHourlyType">
+    <xs:sequence>
+      <xs:element name="Hour" type="tns:HourType"/>
+      <xs:element name="TiePoint" type="tns:TiePointType" minOccurs="0"/>
+      <xs:element name="PriceQuantity" type="tns:PriceQuantityType" minOccurs="2" maxOccurs="5"/>
+      <xs:element name="ReserveLoadPoint" type="tns:PosValue5.1Min0Type"/>
+      <xs:element name="Reason" type="tns:ReasonCodeType" minOccurs="0"/>
+      <xs:element name="OtherReason" type="tns:OtherReasonType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ScheduleSubmitHourlyType">
+    <xs:sequence>
+      <xs:element name="Hour" type="tns:HourType"/>
+      <xs:element name="ZeroPrice" type="tns:NegPosValue6.2Type"/>
+      <xs:element name="Quantity" type="tns:PosValue5.1Min0Type"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BilateralSubmitHourlyType">
+    <xs:sequence>
+      <xs:element name="Hour" type="tns:HourType"/>
+      <xs:element name="TiePoint" type="tns:TiePointType" minOccurs="0"/>
+      <xs:element name="Quantity" type="tns:PosValue5.1Min0Type"/>
+      <xs:element name="OperatingReserveCredit" type="xs:boolean"/>
+      <xs:element name="CapacityReserveCredit" type="xs:boolean"/>
+      <xs:element name="OperatingReserveDebit" type="xs:boolean"/>
+      <xs:element name="CapacityReserveDebit" type="xs:boolean"/>
+      <xs:element name="DamSettlementCredit" type="xs:boolean"/>
+      <xs:element name="GenFailureChargeRebate" type="xs:boolean"/>
+      <xs:element name="RtmSettlementCredit" type="xs:boolean"/>
+      <xs:element name="IntertieFailureChargeRebate" type="xs:boolean"/>
+      <xs:element name="IogSettlementCredit" type="xs:boolean"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RealtimeEnergyBidSubmitType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="Date" type="tns:UploadDateType"/>
+      <xs:element name="BidOffer" type="tns:EnergyBidOfferType"/>
+      <xs:element name="ResourceName" type="tns:ResourceNameType"/>
+      <xs:element name="ThermalState" type="tns:ThermalStateType" minOccurs="0"/>
+      <xs:element name="MinDailyEnergyLimit" type="tns:PosValue7.1Min0Type" minOccurs="0"/>
+      <xs:element name="MaxDailyEnergyLimit" type="tns:PosValue7.1Min0Type" minOccurs="0"/>
+      <xs:element name="MaxDailyEnergyLimitReason" type="tns:ReasonCodeType" minOccurs="0"/>
+      <xs:element name="DailyEnergyRampRate" type="tns:DailyEnergyRampRateType" minOccurs="0" maxOccurs="5"/>
+      <xs:element name="Hourly" type="tns:RealtimeEnergySubmitHourlyType" minOccurs="1" maxOccurs="24"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="OperatingReserveBidSubmitType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="Date" type="tns:UploadDateType"/>
+      <xs:element name="BidOffer" type="tns:ReserveBidOfferType"/>
+      <xs:element name="ResourceName" type="tns:ResourceNameType"/>
+      <xs:element name="ReserveClass" type="tns:ReserveClassType"/>
+      <xs:element name="Hourly" type="tns:OperatingReserveSubmitHourlyType" minOccurs="1" maxOccurs="24"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ScheduleBidSubmitType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="Date" type="tns:UploadDateType"/>
+      <xs:element name="ScheduleType" type="tns:ScheduleTypeType"/>
+      <xs:element name="ResourceName" type="tns:ResourceNameType"/>
+      <xs:element name="Hourly" type="tns:ScheduleSubmitHourlyType" minOccurs="1" maxOccurs="24"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DailyDispatchBidSubmitType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="Date" type="tns:UploadDateType"/>
+      <xs:element name="ResourceName" type="tns:ResourceNameType"/>
+      <xs:element name="ForbiddenRegion" type="tns:ForbiddenRegionType" minOccurs="0" maxOccurs="5"/>
+      <xs:element name="SingleCycleMode" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="MinGenBlockRunTime" type="tns:HourMin0Type" minOccurs="0"/>
+      <xs:element name="MinLoadingPoint" type="tns:PosValue5.1Min0Type" minOccurs="0" maxOccurs="4"/>
+      <xs:element name="MinGenBlockDownTime"  type="tns:MinGenBlockDownTimeType" minOccurs="0"/>
+      <xs:element name="MaxNumOfStartsPerDay" type="tns:PosValue4.0Min1Type" minOccurs="0"/>
+      <xs:element name="LeadTime" type="tns:LeadTimeType" minOccurs="0"/>
+      <xs:element name="RampUpEnergyToMlp" type="tns:RampUpEnergyToMlpType" minOccurs="0"/>
+      <xs:element name="Reason" type="tns:ReasonCodeType" minOccurs="0"/>
+      <xs:element name="OtherReason" type="tns:OtherReasonType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ForebayBidSubmitType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="Date" type="tns:UploadDateType"/>
+      <xs:element name="ForebayName" type="tns:ForebayNameType"/>
+      <xs:element name="LinkedForebay" type="tns:LinkedForebayType" minOccurs="0"/>
+      <xs:element name="MinDailyEnergyLimit" type="tns:PosValue7.1Min0Type" minOccurs="0"/>
+      <xs:element name="MaxDailyEnergyLimit" type="tns:PosValue7.1Min0Type" minOccurs="0"/>
+      <xs:element name="MaxDailyEnergyLimitReason" type="tns:ReasonCodeType" minOccurs="0"/>
+      <xs:element name="Reason" type="tns:ReasonCodeType" minOccurs="0"/>
+      <xs:element name="OtherReason" type="tns:OtherReasonType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BilateralBidSubmitType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="Date" type="tns:UploadDateType"/>
+      <xs:element name="ParticipantSeller" type="tns:ParticipantType"/>
+      <xs:element name="ParticipantBuyer" type="tns:ParticipantType"/>
+      <xs:element name="MarketType" type="tns:MarketTypeType"/>
+      <xs:element name="PbcPercentFlag" type="xs:boolean" default="false"/>
+      <xs:element name="ResourceName" type="tns:ResourceNameType"/>
+      <xs:element name="Hourly" type="tns:BilateralSubmitHourlyType" minOccurs="1" maxOccurs="24"/>
+    </xs:sequence>
+  </xs:complexType>
+  <!-- END: Submit Complex Type Definitions -->
+
+
+  <!-- BEGIN: Cancel Complex Type Definitions -->
+  <xs:complexType name="RealtimeEnergyCancelHourlyType">
+    <xs:sequence>
+      <xs:element name="Hour" type="tns:HourType"/>
+      <xs:element name="Reason" type="tns:ReasonCodeType" minOccurs="0"/>
+      <xs:element name="OtherReason" type="tns:OtherReasonType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="OperatingReserveCancelHourlyType">
+    <xs:sequence>
+      <xs:element name="Hour" type="tns:HourType"/>
+      <xs:element name="Reason" type="tns:ReasonCodeType" minOccurs="0"/>
+      <xs:element name="OtherReason" type="tns:OtherReasonType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RealtimeEnergyBidCancelType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="Date" type="tns:QueryDateType"/>
+      <xs:element name="BidOffer" type="tns:EnergyBidOfferType"/>
+      <xs:element name="ResourceName" type="tns:ResourceNameType"/>
+      <xs:element name="Hourly" type="tns:RealtimeEnergyCancelHourlyType" minOccurs="1" maxOccurs="24"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="OperatingReserveBidCancelType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="Date" type="tns:QueryDateType"/>
+      <xs:element name="BidOffer" type="tns:ReserveBidOfferType"/>
+      <xs:element name="ResourceName" type="tns:ResourceNameType"/>
+      <xs:element name="ReserveClass" type="tns:ReserveClassType"/>
+      <xs:element name="Hourly" type="tns:OperatingReserveCancelHourlyType" minOccurs="1" maxOccurs="24"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ScheduleBidCancelType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="Date" type="tns:QueryDateType"/>
+      <xs:element name="ScheduleType" type="tns:ScheduleTypeType"/>
+      <xs:element name="ResourceName" type="tns:ResourceNameType"/>
+      <xs:element name="Hour" type="tns:HourType" minOccurs="1" maxOccurs="24"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BilateralBidCancelType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="Date" type="tns:QueryDateType"/>
+      <xs:element name="ParticipantSeller" type="tns:ParticipantType"/>
+      <xs:element name="ParticipantBuyer" type="tns:ParticipantType"/>
+      <xs:element name="MarketType" type="tns:MarketTypeType"/>
+      <xs:element name="ResourceName" type="tns:ResourceNameType"/>
+      <xs:element name="Hour" type="tns:HourType" minOccurs="1" maxOccurs="24"/>
+    </xs:sequence>
+  </xs:complexType>
+  <!-- END: Cancel Complex Type Definitions -->
+
+
+  <!-- BEGIN: Query Complex Type Definitions -->
+  <xs:complexType name="RealtimeEnergyBidQueryType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="Date" type="tns:QueryDateType"/>
+      <xs:element name="BidOffer" type="tns:EnergyBidOfferType"/>
+      <xs:element name="ResourceName" type="tns:ResourceNameType" minOccurs="0"/>
+      <xs:element name="Hour" type="tns:HourType" minOccurs="1" maxOccurs="24"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="OperatingReserveBidQueryType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="Date" type="tns:QueryDateType"/>
+      <xs:element name="BidOffer" type="tns:ReserveBidOfferType"/>
+      <xs:element name="ResourceName" type="tns:ResourceNameType" minOccurs="0"/>
+      <xs:element name="ReserveClass" type="tns:ReserveClassType" minOccurs="0"/>
+      <xs:element name="Hour" type="tns:HourType" minOccurs="1" maxOccurs="24"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ScheduleBidQueryType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="Date" type="tns:QueryDateType"/>
+      <xs:element name="ScheduleType" type="tns:ScheduleTypeType"/>
+      <xs:element name="ResourceName" type="tns:ResourceNameType" minOccurs="0"/>
+      <xs:element name="Hour" type="tns:HourType" minOccurs="1" maxOccurs="24"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DailyDispatchBidQueryType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="Date" type="tns:QueryDateType"/>
+      <xs:element name="ResourceName" type="tns:ResourceNameType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ForebayBidQueryType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="Date" type="tns:QueryDateType"/>
+      <xs:element name="ForebayName" type="tns:ForebayNameType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BilateralBidQueryType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="Date" type="tns:QueryDateType"/>
+      <xs:element name="ParticipantSeller" type="tns:ParticipantType" minOccurs="0"/>
+      <xs:element name="ParticipantBuyer" type="tns:ParticipantType" minOccurs="0"/>
+      <xs:element name="MarketType" type="tns:MarketTypeType"/>
+      <xs:element name="ResourceName" type="tns:ResourceNameType" minOccurs="0"/>
+      <xs:element name="Hour" type="tns:HourType" minOccurs="1" maxOccurs="24"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Misc Query types -->
+  <xs:complexType name="ActAsMarketParticipantQueryType">
+    <xs:sequence>
+      <xs:element name="DeliveryDate" type="xs:date"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ResourceQueryType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="BidCategory" type="tns:BidCategoryType"/>
+      <xs:element name="DeliveryDate" type="xs:date"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ForebayQueryType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="DeliveryDate" type="xs:date"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MarketMessageQueryType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType"/>
+      <xs:element name="StartTime" type="xs:dateTime" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <!-- END: Query Complex Type Definitions -->
+
+
+  <!-- BEGIN: Query Response Complex Type Definitions -->
+  <!--Bid Set Types -->
+  <xs:complexType name="RealtimeEnergyBidSetType">
+    <xs:sequence>
+      <xs:element name="RealtimeEnergyBidSubmit" type="tns:RealtimeEnergyBidSubmitType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="OperatingReserveBidSetType">
+    <xs:sequence>
+      <xs:element name="OperatingReserveBidSubmit" type="tns:OperatingReserveBidSubmitType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ScheduleBidSetType">
+    <xs:sequence>
+      <xs:element name="ScheduleBidSubmit" type="tns:ScheduleBidSubmitType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BilateralBidSetType">
+    <xs:sequence>
+      <xs:element name="BilateralBidSubmit" type="tns:BilateralBidSubmitType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DailyDispatchBidSetType">
+    <xs:sequence>
+      <xs:element name="DailyDispatchBidSubmit" type="tns:DailyDispatchBidSubmitType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ForebayBidSetType">
+    <xs:sequence>
+      <xs:element name="ForebayBidSubmit" type="tns:ForebayBidSubmitType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Misc & Common set types -->
+  <xs:complexType name="ActAsMarketParticipantSetType">
+    <xs:sequence>
+      <xs:element name="ActAsMarketParticipant" type="tns:ActAsMarketParticipantType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ResourceSetType">
+    <xs:sequence>
+      <xs:element name="DeliveryDate" type="xs:date"/>
+      <xs:element name="Resource" type="tns:ResType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ForebaySetType">
+    <xs:sequence>
+      <xs:element name="DeliveryDate" type="xs:date"/>
+      <xs:element name="ForebayName" type="tns:ForebayNameType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BidProcessingStatusType">
+    <xs:sequence>
+      <xs:element name="SubmissionTime" type="xs:dateTime"/>
+      <xs:element name="TransactionId" type="tns:TransactionIdType"/>
+      <xs:element name="Message" type="tns:MessageType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="HealthCheckInfoType">
+    <xs:sequence>
+      <xs:element name="Version" type="tns:VersionType"/>
+      <xs:element name="Status" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MarketStatusType">
+    <xs:sequence>
+      <xs:element name="MarketWindow" type="tns:MarketWindowType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MarketMessageSetType">
+    <xs:sequence>
+      <xs:element name="SyncTime" type="xs:dateTime"/>
+      <xs:element name="MarketMessage" type="tns:MarketMessageType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <!-- END: Query Response Complex Type Definitions -->
+
+
+  <!-- BEGIN: Submit Element Definitions -->
+  <xs:element name="RealtimeEnergyBidSubmit" type="tns:RealtimeEnergyBidSubmitType"/>
+  <xs:element name="OperatingReserveBidSubmit" type="tns:OperatingReserveBidSubmitType"/>
+  <xs:element name="ScheduleBidSubmit" type="tns:ScheduleBidSubmitType"/>
+  <xs:element name="DailyDispatchBidSubmit" type="tns:DailyDispatchBidSubmitType"/>
+  <xs:element name="ForebayBidSubmit" type="tns:ForebayBidSubmitType"/>
+  <xs:element name="BilateralBidSubmit" type="tns:BilateralBidSubmitType"/>
+  <!-- END: Submit Element Definitions -->
+
+
+  <!-- BEGIN: Cancel Element Definitions -->
+  <xs:element name="RealtimeEnergyBidCancel" type="tns:RealtimeEnergyBidCancelType"/>
+  <xs:element name="OperatingReserveBidCancel" type="tns:OperatingReserveBidCancelType"/>
+  <xs:element name="ScheduleBidCancel" type="tns:ScheduleBidCancelType"/>
+  <xs:element name="BilateralBidCancel" type="tns:BilateralBidCancelType"/>
+  <!-- END: Cancel Element Definitions -->
+
+
+  <!-- BEGIN: Query Element Definitions -->
+  <!-- Bid Queries -->
+  <xs:element name="RealtimeEnergyBidQuery" type="tns:RealtimeEnergyBidQueryType"/>
+  <xs:element name="OperatingReserveBidQuery" type="tns:OperatingReserveBidQueryType"/>
+  <xs:element name="ScheduleBidQuery" type="tns:ScheduleBidQueryType"/>
+  <xs:element name="DailyDispatchBidQuery" type="tns:DailyDispatchBidQueryType"/>
+  <xs:element name="ForebayBidQuery" type="tns:ForebayBidQueryType"/>
+  <xs:element name="BilateralBidQuery" type="tns:BilateralBidQueryType"/>
+  <!-- Misc Queries -->
+  <xs:element name="ActAsMarketParticipantQuery" type="tns:ActAsMarketParticipantQueryType"/>
+  <xs:element name="ResourceQuery" type="tns:ResourceQueryType"/>
+  <xs:element name="ForebayQuery" type="tns:ForebayQueryType"/>
+  <xs:element name="HealthCheckQuery">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="MarketStatusQuery">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="MarketMessageQuery" type="tns:MarketMessageQueryType"/>
+  <!-- END: Query Element Definitions -->
+
+
+  <!-- BEGIN: Query Response Element Definitions -->
+  <!-- Bid Response sets -->
+  <xs:element name="RealtimeEnergyBidSet" type="tns:RealtimeEnergyBidSetType"/>
+  <xs:element name="OperatingReserveBidSet" type="tns:OperatingReserveBidSetType"/>
+  <xs:element name="ScheduleBidSet" type="tns:ScheduleBidSetType"/>
+  <xs:element name="BilateralBidSet" type="tns:BilateralBidSetType"/>
+  <xs:element name="DailyDispatchBidSet" type="tns:DailyDispatchBidSetType"/>
+  <xs:element name="ForebayBidSet" type="tns:ForebayBidSetType"/>
+  <!-- Misc Queries Response Sets -->
+  <xs:element name="ActAsMarketParticipantSet" type="tns:ActAsMarketParticipantSetType"/>
+  <xs:element name="ResourceSet" type="tns:ResourceSetType"/>
+  <xs:element name="ForebaySet" type="tns:ForebaySetType"/>
+  <xs:element name="HealthCheckInfo" type="tns:HealthCheckInfoType"/>
+  <xs:element name="MarketStatus" type="tns:MarketStatusType"/>
+  <xs:element name="MarketMessageSet" type="tns:MarketMessageSetType"/>
+  <!-- END: Query Response Element Definitions -->
+  
+  <!-- Common -->
+  <xs:element name="BidProcessingStatus" type="tns:BidProcessingStatusType"/>
+
+  <!-- BEGIN: Query Fault Element Definitions -->
+  <xs:element name="QueryFault" type="xs:string"/>
+  <!-- END: Query Fault Element Definitions -->
+
+</xs:schema>

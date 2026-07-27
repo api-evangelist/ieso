@@ -1,0 +1,459 @@
+aid: ieso
+name: IESO
+slug: ieso
+reviewer: API Evangelist
+date: '2026-07-27'
+tier: system-operator
+homeMarket: Canada
+primaryDomain: ieso.ca
+
+review:
+  question: >-
+    Does IESO publish an open, machine-readable market/system data surface, does any energy data
+    mandate apply to it, and can a third party obtain consumer energy data from it?
+  answer: >-
+    Yes to open market data, no to any consumer data right. IESO publishes 139 directories of grid and
+    market data anonymously over HTTPS with no account, key or licence click-through, and separately
+    operates a set of documented but strictly participant-gated REST and SOAP APIs. Ontario's Green
+    Button regulation does not reach IESO because it binds distributors, not the system operator, and
+    IESO holds no retail customer accounts, so there is no consumer energy data API here at all.
+
+mandate:
+  regime: other
+  regimeLabel: >-
+    Market-transparency publication obligation under the Ontario electricity Market Rules and IESO's
+    own market manuals — NOT a consumer data right.
+  status: live-implemented
+  statusEvidence: >-
+    Verified by direct anonymous probe, not by claim. https://reports-public.ieso.ca/public/ returned
+    HTTP 200 on 2026-07-27 with a directory index of 139 report folders, and
+    https://reports-public.ieso.ca/public/Demand/PUB_Demand.csv returned HTTP 200 with live 2026 hourly
+    Ontario and market demand data (header "\\Hourly Demand Report", "\\Created at 2026-07-27
+    07:30:10"). No cookie, key, referrer, login or terms acceptance was required. The interface is
+    described in IESO's own published specification IMO_SPEC_0100 "Outbound Automated Document,
+    Application Programming Interface" (Issue 8.0/9.0, revision dated March 5, 2025), section 3, which
+    states the production URL for the public report repository is https://reports-public.ieso.ca and
+    that "All market participants, and in general, the public, have access to public report
+    repository."
+  obligationBasisChecked: >-
+    Renewed Market Rules Chapter 7 (Issue 3.0, December 3, 2025) section 1.6.6 presupposes publication
+    of calculation-engine results and gives the IESO a rule-amendment route to LIMIT that publication
+    if it would facilitate anti-competitive behaviour, and section 1.6.5 requires the IESO to
+    "commission and publish" independent reviews of the calculation engines. That is consistent with a
+    standing publication duty, but this review did NOT locate a single citable market-rule clause that
+    enumerates the public report set, so the regime is recorded as `other` rather than being attached
+    to a named statute. What is recorded as fact is the implementation, which was probed directly.
+  greenButtonOntarioApplicability: >-
+    DOES NOT APPLY TO IESO. Ontario Regulation 633/21 (Energy Data, the Green Button Regulation) under
+    the Electricity Act, 1998 imposes its obligation on "energy providers". OEB Staff Guidance for
+    Implementation of Green Button (2021-11-01, page footnote) states: "The obligation to make energy
+    data available under section 25.35.8 of the Electricity Act, 1998 applies to 'energy providers',
+    which is defined in the Green Button Regulation as including most electricity and natural gas
+    distributors." IESO is the province's independent system operator and market administrator, not a
+    licensed distributor, and holds no retail customer accounts. Green Button Ontario's published FAQ
+    (greenbuttonontario.ca) likewise describes covered parties as "All Ontario Utilities within the
+    Regulation", requires NAESB REQ.21 ESPI v3.3, and sets the compliance date at November 1, 2023 —
+    and does not name the IESO. No Green Button, ESPI, Connect My Data or Download My Data surface was
+    found anywhere on ieso.ca.
+  cdrApplicability: >-
+    Not applicable. The Australian Consumer Data Right energy regime has no Canadian equivalent; there
+    is no federal or Ontario consumer data right covering electricity, no accreditation register, and
+    no designated data holder status for IESO.
+  claimsVersusImplementation: >-
+    No compliance claim, press release or standards-conformance assertion was relied on anywhere in
+    this review. Every posture recorded here rests on an HTTP status code captured on 2026-07-27 or on
+    verbatim text from an IESO- or OEB-published PDF.
+
+dataStandard:
+  implemented: >-
+    Proprietary IESO XML report schemas. Public reports are governed by IESO's own STD-2 "Automated
+    Documents" standard and IMO_SPEC_0100, with per-report XSDs published openly (IMODocument_r1.xsd
+    and Document_r1.xsd as the envelope, plus report-specific schemas such as GenOutputCapability_r1,
+    IntertieScheduleFlow_r1, DispUnconsHOEP_r1 and the DACP family). Participant bid/offer submission
+    is governed by the emim WSDL/XSD pair. Revenue meter data exchange uses ANSI X12 EDI 867 (IESO
+    implementation guide GDE139).
+  notImplemented:
+  - Green Button / NAESB REQ.21 ESPI — no reference found on ieso.ca
+  - CDR Consumer Data Standards (energy) — not applicable in Canada
+  - IEC CIM 61968 / 61970 — no reference found
+  - IEEE 2030.5, OpenADR, OCPP, OCPI — no reference found
+  - OpenAPI / AsyncAPI — no machine-readable HTTP API contract published anywhere
+  summary: >-
+    proprietary IESO XML report schemas (STD-2 / IMO_SPEC_0100, IMODocument_r1.xsd) plus ANSI X12 EDI
+    867 for meter data; no Green Button/ESPI, CIM, or CDR reference found
+
+consumerVersusMarketData:
+  consumerDataAPI: false
+  consumerDataNote: >-
+    None exists and none is expected. IESO does not bill or serve retail electricity customers — that
+    is the role of Ontario's licensed local distribution companies, who are the parties bound by O.
+    Reg. 633/21. No individual usage, interval, account or billing data of any kind is exposed by IESO
+    to anyone, gated or otherwise. The nearest thing to disaggregated consumption is
+    HourlyConsumptionByFSA (hourly consumption aggregated to Forward Sortation Area, the first three
+    characters of a postal code) and IndustrLoadBySector — both anonymized aggregates published openly,
+    not customer data.
+  marketDataOpen: true
+  marketDataNote: >-
+    Fully open, anonymous, no registration. 139 report directories enumerated at
+    https://reports-public.ieso.ca/public/ on 2026-07-27 (HTTP 200), covering Demand, DemandZonal,
+    RealtimeDemandZonal, PriceHOEPAverage, PriceNodal, RealtimeMktPrice, RealtimeEnergyLMP,
+    DAHourlyEnergyLMP, DAHourlyZonal, GenOutputCapability, GenOutputbyFuelHourly,
+    GenOutputbyFuelMonthly, IntertieScheduleFlow, Adequacy2/Adequacy3, VGForecastSummary,
+    GlobalAdjustment, TxOutages (1-30/31-90/91-180/181-730 day horizons and TxOutagesTodayAll),
+    transmission rights auction results (TRA*), operating reserve, shadow prices, security constraints,
+    settlement uplift and weekly market summaries. Formats are CSV, XML and XLSX, with XML validated
+    against openly published XSDs. Update cadence ranges from 5-minute real-time to monthly.
+  theSplit: >-
+    This is the sharpest read/write split in the sector so far and it is architectural, not
+    accidental. Everything IESO PUBLISHES is open to the anonymous public with no gate whatsoever.
+    Everything a party SUBMITS to IESO — bids, offers, dispatch acknowledgements, outage requests,
+    facility registrations, retrofit projects — runs through APIs that are gated to registered Ontario
+    market participants with IESO-issued machine accounts. The OCSS outage service is the cleanest
+    illustration: submitting an outage request needs SPEC-113 credentials, but reading the resulting
+    outage schedule needs nothing at all.
+
+accessGate:
+  gate: self-serve
+  gateNote: >-
+    Recorded as self-serve because that is the most permissive real path a developer has, and it
+    understates rather than overstates openness: the market-data surface requires no signup at all —
+    an anonymous HTTPS GET works today. The programmatic APIs are a different world and are effectively
+    partner-only.
+  whatADeveloperMustDo:
+    forOpenMarketData: >-
+      Nothing. GET https://reports-public.ieso.ca/public/<Document Identifier>/<filename> over HTTPS.
+      No account, no key, no OAuth, no terms click-through, no rate-limit documentation, no CORS
+      headers advertised. The only stated condition is the site-wide Terms of Use, which grants a
+      limited reproduction licence conditional on the attribution notice "Copyright (c) 2004-2022
+      Independent Electricity System Operator, all rights reserved. This information is subject to the
+      Terms of Use set out in the IESO's website (www.ieso.ca)". No open-data licence (OGL, CC-BY) is
+      applied.
+    forTheRESTAndSOAPAPIs: >-
+      Become a registered Ontario market participant, then have your organization's IESO-registered
+      Rights Administrator request a machine/API account with the relevant access profile. For the
+      Reports Site REST API and SFTP, IESO issues a username and password on request. For the Online
+      IESO Appian APIs (registration, retrofit), the Rights Administrator requests an API account with
+      the specific API access, and IESO issues an Appian API key. For MIM SOAP, you additionally need
+      source IP whitelisting and a client truststore. None of these can be obtained by a member of the
+      public, and none has a self-serve signup page.
+
+authModel:
+  publicReports:
+    scheme: none
+    note: Anonymous HTTPS. No credential of any kind is accepted or required.
+  reportsSiteRestAPI:
+    scheme: HTTP Basic
+    note: >-
+      Username/password machine account, plus a mandatory query string parameter ?idp_id=ieso on every
+      request. Verified HTTP 401 anonymously against
+      https://reports.ieso.ca/api/v1.4/files?idp_id=ieso and against the sandbox
+      https://reports-sandbox.ieso.ca/api/v1.4/files?idp_id=ieso on 2026-07-27. The same path on
+      reports-public.ieso.ca returned 404 — the API does not front the open data.
+  reportsSiteInteractive:
+    scheme: SAML 2.0 / Okta
+    note: >-
+      https://reports.ieso.ca/ (browser path) issues a signed SAML2 AuthnRequest POST to
+      https://gateway.ieso.ca/app/ieso_iesoreportssite_1/exkn78uw4tq2OXcG02p7/sso/saml — an Okta
+      tenant. https://gateway.ieso.ca/.well-known/openid-configuration returned HTTP 200 anonymously,
+      confirming an OIDC-capable Okta identity provider, but it fronts participant login, not any
+      developer-facing OAuth client registration.
+  onlineIesoAppianAPIs:
+    scheme: API key
+    note: >-
+      Per SPEC-249, an Appian API key presented three interchangeable ways — HTTP Basic with the key as
+      username and blank password (or key as password and blank username), an `Appian-API-Key` request
+      header, or an `Authorization: Bearer <key>` header. HTTPS is mandatory; a missing or malformed
+      Authorization header returns 401.
+  mimSoap:
+    scheme: Username/password plus IP whitelisting and TLS truststore
+    note: >-
+      Credentials formatted user@participantName, per the MIM Web Services Toolkit user guide
+      (ws.client.username / ws.client.password properties, ws-client.jks truststore). IESO documents
+      the sandbox endpoint https://webservices-sandbox.ieso.ca/emim.
+  sftp:
+    scheme: SSH key / password
+    note: >-
+      IMO_SPEC_0100 and the Reports API Guide document SFTP to reports.ieso.ca port 22 as an
+      alternative machine channel for confidential reports.
+
+probes:
+- url: https://www.ieso.ca/
+  status: 200
+  note: Corporate site. Title "Independent Electricity System Operator (IESO)". Empty meta description.
+- url: https://ieso.ca/
+  status: 200
+- url: https://reports-public.ieso.ca/
+  status: 200
+  note: >-
+    "IESO Reports Site" landing page linking Public Reports and Participant Reports.
+- url: https://reports-public.ieso.ca/public/
+  status: 200
+  note: Apache-style directory index; 139 report directories enumerated.
+- url: https://reports-public.ieso.ca/public/Demand/PUB_Demand.csv
+  status: 200
+  note: Live hourly demand CSV for 2026, generated 2026-07-27 07:30:10. Anonymous.
+- url: https://reports-public-sandbox.ieso.ca/public/
+  status: 200
+  note: Public sandbox repository, also anonymous.
+- url: https://reports.ieso.ca/
+  status: 200
+  note: Immediately auto-POSTs a SAML2 AuthnRequest to gateway.ieso.ca (Okta). Participant login, not a developer portal.
+- url: https://reports.ieso.ca/api/v1.4/files?idp_id=ieso
+  status: 401
+  note: Real API, credentials required. Axway SecureTransport.
+- url: https://reports-sandbox.ieso.ca/api/v1.4/files?idp_id=ieso
+  status: 401
+- url: https://reports-public.ieso.ca/api/v1.4/files?idp_id=ieso
+  status: 404
+  note: Confirms the REST API does not serve public reports.
+- url: https://www.ieso.ca/sector-participants/technical-interfaces
+  status: 200
+  note: The de facto developer surface. A public index of every documented IESO technical interface with downloadable specs, WSDL, XSDs and sample payloads. No signup, no key issuance.
+- url: https://www.ieso.ca/en/Power-Data/Data-Directory
+  status: 200
+  note: Public data catalogue listing reports by category with direct reports-public.ieso.ca links. No API mentioned, no registration.
+- url: https://online.ieso.ca/
+  status: 200
+  note: Online IESO participant portal (Appian). Login-gated for business functions.
+- url: https://online.ieso.ca/suite/webapi/reg-v1-facilities/
+  status: 200
+  note: Appian web API path resolves; SPEC-249 documents API-key auth for actual use.
+- url: https://onlinesandbox.ieso.ca/suite/webapi/
+  status: 200
+- url: https://gateway.ieso.ca/.well-known/openid-configuration
+  status: 200
+  note: Okta OIDC discovery document served anonymously. Participant IdP.
+- url: https://webservices.ieso.ca/emim
+  status: 000
+  note: No connection from the open internet. Consistent with IP whitelisting.
+- url: https://webservices-sandbox.ieso.ca/emim
+  status: 000
+- url: https://developer.ieso.ca/
+  status: 000
+- url: https://developers.ieso.ca/
+  status: 000
+- url: https://api.ieso.ca/
+  status: 000
+- url: https://docs.ieso.ca/
+  status: 000
+- url: https://data.ieso.ca/
+  status: 000
+- url: https://www.ieso.ca/openapi.json
+  status: 404
+- url: https://www.ieso.ca/swagger.json
+  status: 404
+- url: https://reports-public.ieso.ca/public/openapi.json
+  status: 404
+- url: https://reports-public.ieso.ca/public/swagger.json
+  status: 404
+- url: https://reports-public.ieso.ca/.well-known/
+  status: 404
+- url: https://www.ieso.ca/llms.txt
+  status: 404
+- url: https://www.ieso.ca/.well-known/security.txt
+  status: 404
+- url: https://www.ieso.ca/api-docs
+  status: 404
+  note: >-
+    Returns HTTP 200 on the wire but redirects to the Sitecore soft-404 page
+    https://www.ieso.ca/Error-404?item=%2fapi-docs (title "Error-404"). Same for https://www.ieso.ca/api.
+- url: https://www.ieso.ca/Terms-of-Use
+  status: 200
+- url: https://www.ieso.ca/en/Corporate-IESO/Blog
+  status: 200
+- url: https://www.linkedin.com/company/ieso
+  status: 200
+  note: Confirmed "Independent Electricity System Operator (IESO) | LinkedIn".
+
+harvested:
+  openapi: 0
+  openapiNote: >-
+    IESO publishes no OpenAPI, Swagger, AsyncAPI, Postman collection or JSON Schema anywhere. Probed
+    /openapi.json, /swagger.json, /api-docs and /.well-known/ on ieso.ca and reports-public.ieso.ca —
+    all 404 or absent. The openapi/ directory is deliberately omitted rather than populated with
+    anything derived or invented.
+  artifacts:
+  - path: wsdl/ieso-mim-web-services.wsdl
+    type: WSDL
+    source: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/mp-submissions/emim-wsdl.wsdl
+    httpStatus: 200
+    fetched: '2026-07-27'
+    bytes: 37845
+    parses: true
+    note: wsdl:definitions, service emim-web-service, 23 operations, soap:address http://webservices.ieso.ca/emim/
+  - path: xsd/ieso-mim-web-services.xsd
+    type: XSD
+    source: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/mp-submissions/emim-xsd.xsd
+    httpStatus: 200
+    fetched: '2026-07-27'
+    bytes: 40940
+    parses: true
+  - path: xsd/ieso-imo-document-r1.xsd
+    type: XSD
+    source: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/xml-automated-docs/IMODocument_r1.xsd
+    httpStatus: 200
+    fetched: '2026-07-27'
+    bytes: 3784
+    parses: true
+  - path: xsd/ieso-document-r1.xsd
+    type: XSD
+    source: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/xml-automated-docs/Document_r1.xsd
+    httpStatus: 200
+    fetched: '2026-07-27'
+    bytes: 3767
+    parses: true
+  - path: xsd/ieso-intertie-schedule-flow-r1.xsd
+    type: XSD
+    source: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/market-results/IntertieScheduleFlow_r1.xsd
+    httpStatus: 200
+    fetched: '2026-07-27'
+    bytes: 7346
+    parses: true
+  - path: xsd/ieso-gen-output-capability-r1.xsd
+    type: XSD
+    source: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/market-results/GenOutputCapability_r1.xsd
+    httpStatus: 200
+    fetched: '2026-07-27'
+    bytes: 3439
+    parses: true
+  - path: xsd/ieso-disp-uncons-hoep-r1.xsd
+    type: XSD
+    source: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/market-results/DispUnconsHOEP_r1.xsd
+    httpStatus: 200
+    fetched: '2026-07-27'
+    bytes: 2559
+    parses: true
+  - path: xsd/ieso-disp-advisory-r1.xsd
+    type: XSD
+    source: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/market-results/DispAdvisory_r1.xsd
+    httpStatus: 200
+    fetched: '2026-07-27'
+    bytes: 10709
+    parses: true
+  - path: xsd/ieso-dacp-predisp-energy-r1.xsd
+    type: XSD
+    source: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/market-results/DACPPredispEnergy_r1.xsd
+    httpStatus: 200
+    fetched: '2026-07-27'
+    bytes: 5183
+    parses: true
+  - path: xsd/ieso-dacp-predisp-prices-r1.xsd
+    type: XSD
+    source: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/market-results/DACPPredispPrices_r1.xsd
+    httpStatus: 200
+    fetched: '2026-07-27'
+    bytes: 3151
+    parses: true
+  - path: xsd/ieso-dacp-adequacy-r1.xsd
+    type: XSD
+    source: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/market-results/DACPAdequacy_r1.xsd
+    httpStatus: 200
+    fetched: '2026-07-27'
+    bytes: 6924
+    parses: true
+  - path: xsd/ieso-dacp-reliability-commit-r1.xsd
+    type: XSD
+    source: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/market-results/DACPReliabilityCommit_r1.xsd
+    httpStatus: 200
+    fetched: '2026-07-27'
+    bytes: 2461
+    parses: true
+  - path: xsd/ieso-dacp-commit-r1.xsd
+    type: XSD
+    source: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/market-results/DACPCommit_r1.xsd
+    httpStatus: 200
+    fetched: '2026-07-27'
+    bytes: 3751
+    parses: true
+  - path: xsd/ieso-dacp-check-source-ade-r1.xsd
+    type: XSD
+    source: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/market-results/DACPCheckSourceADE_r1.xsd
+    httpStatus: 200
+    fetched: '2026-07-27'
+    bytes: 4955
+    parses: true
+  - path: xsd/ieso-financial-binding-status-r1.xsd
+    type: XSD
+    source: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/market-results/FinancialBindingStatus_r1.xsd
+    httpStatus: 200
+    fetched: '2026-07-27'
+    bytes: 7588
+    parses: true
+
+sources:
+- url: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/xml-automated-docs/IMO_SPEC_0100.pdf
+  type: Specification
+  httpStatus: 200
+  note: >-
+    "Outbound Automated Document, Application Programming Interface". Revision 9.0 dated March 5, 2025
+    is described as "Updated to reflect various changes to the URL for IESO Reports Site (public reports
+    and REST API endpoint)". Section 3 gives the public repository URLs; section 5.5 gives the REST API
+    endpoints, which are documented ONLY for the confidential repository.
+- url: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/api-reports-guide/IESO_Reports_API_Guide.pdf
+  type: Documentation
+  httpStatus: 200
+  note: >-
+    "IESO Reports Site - Access Interfaces for Confidential Reports". States "The recommended
+    programmatic access applies to confidential reports repository and not public reports" and "The
+    market participant must have a valid user name and password in order to access the confidential
+    report repository (upon request the IESO shall provide the market participant with a machine
+    account)." Identifies the API as Axway SecureTransport and shows curl examples against
+    /api/v1.4/files.
+- url: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/registration-system/FacilityAPISpecification-SPEC-249.pdf
+  type: Documentation
+  httpStatus: 200
+  note: Base https://online.ieso.ca/suite/webapi/, facilities resource reg-v1-facilities, sandbox onlinesandbox.ieso.ca, Appian API-key auth in three forms, API account requested via the organization's Rights Administrator.
+- url: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/retrofit-system/RetrofitAPI-SPEC-188.pdf
+  type: Documentation
+  httpStatus: 200
+- url: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/retrofit-system/RetrofitServiceProviderAPI-SPEC-232.pdf
+  type: Documentation
+  httpStatus: 200
+- url: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/dispatch-service-system/SPEC-154-Dispatch-Service-Web-Service-Design-Specifications.pdf
+  type: Documentation
+  httpStatus: 200
+- url: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/dispatch-service-system/SPEC-155-Dispatch-Notification-Service-Web-Service-Design-Specifications.pdf
+  type: Documentation
+  httpStatus: 200
+- url: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/outage-management/WebServiceDesignSpec_SPEC-113.pdf
+  type: Documentation
+  httpStatus: 200
+- url: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/mp-submissions/MWT-User-Guide.pdf
+  type: Documentation
+  httpStatus: 200
+  note: MIM Web Services Toolkit guide; documents ws.client.end.point = https://webservices-sandbox.ieso.ca/emim and username format user@participantName.
+- url: https://www.oeb.ca/sites/default/files/OEB-Staff-Guidance-for-Implementation-of-Green-Button-20211101.pdf
+  type: Regulation
+  httpStatus: 200
+  note: Ontario Energy Board staff guidance confirming the Green Button obligation binds "energy providers", defined as most electricity and natural gas distributors.
+- url: https://greenbuttonontario.ca/ontario-green-button-faqs/
+  type: Regulation
+  httpStatus: 200
+  note: Requires NAESB REQ.21 ESPI v3.3, deadline November 1, 2023, covered parties described as Ontario utilities within the regulation. IESO not named.
+- url: https://www.ieso.ca/-/media/Files/IESO/Document-Library/Renewed-Market-Rules-and-Manuals/market-rules/ieso-mr-chapter0-7.pdf
+  type: MarketRules
+  httpStatus: 200
+  note: Renewed Market Rules Chapter 7, Issue 3.0, December 3, 2025. Sections 1.6.5 and 1.6.6 concern publication of calculation-engine review results and limiting publication of calculation-engine information.
+
+homonymTrap: >-
+  github.com/ieso returns HTTP 200 but is "Ieso Digital Health", a Cambridge UK online mental health
+  therapy company (blog https://ieso.ai). It is NOT the Independent Electricity System Operator and was
+  deliberately excluded. No GitHub organization was found for the Ontario IESO.
+
+findings:
+  summary: >-
+    IESO is the clearest "open on the way out, sealed on the way in" provider profiled in this sector.
+    The read surface is exemplary for a system operator by volume and honesty — 139 report directories,
+    5-minute to monthly cadence, CSV/XML/XLSX, published XSDs, no gate — and unusable as a modern API
+    by contract standards: no OpenAPI, no query parameters, no filtering, no pagination, no
+    content negotiation, no documented rate limits, no versioned resource model, no open-data licence.
+    A developer integrates by parsing directory listings and constructing filenames. Meanwhile every
+    genuinely API-shaped thing IESO operates — Axway REST, Appian REST with three API-key modes, SOAP
+    with 23 operations — is behind market participant registration. And the sector's headline question
+    simply does not arise here: Ontario mandated Green Button, but on distributors, and the system
+    operator is not one, so IESO holds no consumer energy data to mandate access to.
+  agentReadiness: >-
+    Low despite the open data. Nothing on ieso.ca is machine-discoverable in a modern sense: no
+    /.well-known/, no llms.txt found, no OpenAPI, no JSON API, no schema.org dataset markup observed on
+    the Data Directory. An agent can fetch a CSV if it already knows the filename convention; it cannot
+    discover the surface.
