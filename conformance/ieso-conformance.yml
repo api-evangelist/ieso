@@ -1,0 +1,164 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  wsdl/ieso-mim-web-services.wsdl, xsd/*.xsd, well-known/ieso-openid-configuration.json,
+  IMO_SPEC_0100, IESO_Reports_API_Guide.pdf, SPEC-249 and live probes on 2026-07-27
+docs: https://www.ieso.ca/sector-participants/technical-interfaces
+note: >-
+  Every entry below is asserted from an artifact in this repo or a verified probe. IESO makes no
+  API-level conformance claim of its own — it publishes interface specifications, not conformance
+  statements — so nothing here is taken from marketing copy. Domain standards (NERC CIP, NPCC, the
+  Ontario Cyber Security Standard) are recorded separately because IESO's relationship to them is as
+  administrator/enforcer for the Ontario sector, not as a certified API vendor.
+standards:
+- id: wsdl-1.1
+  conforms: true
+  evidence: >-
+    wsdl/ieso-mim-web-services.wsdl declares wsdl:definitions in the WSDL 1.1 namespace, service
+    emim-web-service, 23 operations, soap:address http://webservices.ieso.ca/emim/.
+- id: soap-1.1
+  conforms: true
+  evidence: SOAP 1.1 binding with document/literal style and three declared wsdl:fault elements.
+- id: xml-schema-1.0
+  conforms: true
+  evidence: >-
+    14 XSD files harvested to xsd/, all parsing. Includes the shared IMODocument_r1/Document_r1
+    envelopes and 12 report-specific schemas.
+- id: oidc-discovery-1.0
+  conforms: true
+  evidence: >-
+    https://gateway.ieso.ca/.well-known/openid-configuration returns HTTP 200 with issuer,
+    authorization_endpoint, token_endpoint, userinfo_endpoint, jwks_uri and the full OIDC metadata
+    set. Saved to well-known/ieso-openid-configuration.json.
+  scope_note: Applies to the participant identity provider, not to any documented API.
+- id: rfc8414-oauth-authorization-server-metadata
+  conforms: true
+  evidence: >-
+    https://gateway.ieso.ca/.well-known/oauth-authorization-server returns HTTP 200 with RFC 8414
+    metadata. Saved to well-known/ieso-oauth-authorization-server.json.
+- id: oauth2
+  conforms: true
+  evidence: >-
+    grant_types_supported = authorization_code, implicit, refresh_token, password, device_code;
+    token_endpoint_auth_methods_supported includes private_key_jwt and client_secret_jwt.
+  scope_note: Identity provider only. No IESO API accepts OAuth bearer tokens.
+- id: rfc7636-pkce
+  conforms: true
+  evidence: code_challenge_methods_supported = ["S256"] in the gateway discovery document.
+- id: rfc9449-dpop
+  conforms: true
+  evidence: dpop_signing_alg_values_supported present (RS256/RS384/RS512 and others) in the gateway discovery document.
+- id: rfc8628-device-authorization-grant
+  conforms: true
+  evidence: device_authorization_endpoint https://gateway.ieso.ca/oauth2/v1/device/authorize.
+- id: rfc7617-http-basic
+  conforms: true
+  evidence: >-
+    The Reports REST API and the Online IESO Appian APIs both accept HTTP Basic; the Reports API Guide
+    shows curl -u username:password examples.
+- id: rfc4253-ssh-sftp
+  conforms: true
+  evidence: >-
+    IESO_Reports_API_Guide.pdf documents SFTP on reports.ieso.ca port 22 as a second access interface
+    to the confidential repository.
+- id: openapi
+  conforms: false
+  evidence: >-
+    No OpenAPI or Swagger document exists. /openapi.json, /openapi.yaml, /swagger.json, /api-docs and
+    /v1/openapi.json probed on www.ieso.ca, reports-public.ieso.ca, reports.ieso.ca and
+    online.ieso.ca on 2026-07-27 — all 404 or HTML soft-200.
+- id: asyncapi
+  conforms: false
+  evidence: No AsyncAPI document published; the push surface is a SOAP notification web service (SPEC-155).
+- id: graphql
+  conforms: false
+  evidence: No GraphQL endpoint on any host.
+- id: mcp
+  conforms: false
+  evidence: No MCP server published or referenced.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: >-
+    No application/problem+json anywhere. Errors are bare HTTP statuses or SOAP faults carrying
+    BidProcessingStatusType. See errors/ieso-error-codes.yml.
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: >-
+    No Sunset or Deprecation header on any surface. Interface change notice is delivered through the
+    IT Release Schedule instead. See lifecycle/ieso-lifecycle.yml.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt returns 404 on www.ieso.ca, reports-public.ieso.ca and online.ieso.ca.
+- id: rfc8615-well-known-uris
+  conforms: partial
+  evidence: >-
+    Only gateway.ieso.ca serves real /.well-known/ documents. The corporate site and both report
+    repositories publish none. See well-known/ieso-well-known.yml.
+- id: json-api
+  conforms: false
+  evidence: The SecureTransport listing payload is a plain {"files":[...]} envelope, not JSON:API.
+- id: odata
+  conforms: false
+- id: scim2
+  conforms: false
+- id: fhir-r4
+  conforms: false
+- id: fapi
+  conforms: false
+- id: psd2
+  conforms: false
+- id: naesb-espi-green-button
+  conforms: false
+  evidence: >-
+    Ontario Regulation 633/21 binds "energy providers" — electricity and natural gas distributors —
+    not the system operator. No Green Button, ESPI, Connect My Data or Download My Data surface exists
+    anywhere on ieso.ca. See review.yml mandate.greenButtonOntarioApplicability.
+- id: cdr-energy
+  conforms: false
+  evidence: No Canadian equivalent of the Australian Consumer Data Right energy regime exists.
+- id: tls-1.2-minimum
+  conforms: true
+  evidence: >-
+    Probed 2026-07-27 — www.ieso.ca negotiates TLSv1.3, reports-public.ieso.ca and reports.ieso.ca
+    negotiate TLSv1.2. See security/ieso-domain-security.yml.
+- id: hsts
+  conforms: partial
+  evidence: >-
+    reports.ieso.ca sets Strict-Transport-Security with max-age 15768000. www.ieso.ca and
+    reports-public.ieso.ca do not set HSTS.
+- id: dnssec
+  conforms: false
+  evidence: ieso.ca is not DNSSEC-signed.
+- id: dmarc
+  conforms: partial
+  evidence: DMARC record present with policy p=none (monitor only). SPF present.
+sector_standards:
+  note: >-
+    IESO's role in these is as the Ontario sector's administrator and reporting authority, not as a
+    certified API provider. Recorded for completeness; they are not API conformance claims.
+  entries:
+  - id: ontario-cyber-security-standard
+    version: V3.0
+    relationship: administrator
+    evidence: >-
+      Licensed Ontario transmission and distribution entities must report cyber security incidents to
+      the IESO as defined in the OCSS. Amendment enacted 2025-09-22.
+    url: https://www.ieso.ca/Sector-Participants/Cyber-Security/Cyber-Security-Incident-Reporting
+  - id: nerc-cip-003
+    relationship: reporting authority
+    evidence: >-
+      Market participants with Low impact BES Cyber Systems report to the IESO under IESO Market
+      Manual 7.1.
+  - id: nerc-cip-008
+    relationship: reporting authority
+    evidence: Market participants with Medium or High impact BES Cyber Systems report to the IESO.
+  - id: npcc-directory-1
+    relationship: aligned
+    evidence: >-
+      Market Manual 7.4 Grid Operating Policies carries an NPCC Directory #1 alignment correction in
+      the Baseline 56.0 pending changes package.
+certifications_published: none
+certifications_note: >-
+  IESO publishes no SOC 2, ISO 27001, PCI DSS, HIPAA, FedRAMP or CSA STAR attestation, and operates no
+  trust center. Probed 2026-07-27 — trust.ieso.ca, security.ieso.ca, /trust and /compliance all miss.
+  No Compliance pointer is emitted for this provider.

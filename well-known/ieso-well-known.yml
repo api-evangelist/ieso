@@ -1,0 +1,75 @@
+generated: '2026-07-27'
+method: searched
+source: live probes of every IESO API host on 2026-07-27
+note: >-
+  IESO publishes no /.well-known/ discovery surface on its corporate site or on either report
+  repository. The one real discovery document in the estate belongs to gateway.ieso.ca, the Okta
+  identity provider that fronts participant login for reports.ieso.ca and the Online IESO portal —
+  it is served anonymously and is harvested here verbatim. Several probes returned HTTP 200 with an
+  HTML body (a Sitecore soft-404 on www.ieso.ca, the SecureTransport SAML login page on
+  reports.ieso.ca, the Appian shell on online.ieso.ca); those are recorded as html_soft_200 and are
+  NOT well-known documents.
+hosts:
+- host: https://gateway.ieso.ca
+  role: identity provider (Okta) for IESO participant applications
+  documents:
+  - path: /.well-known/openid-configuration
+    status: 200
+    content_type: application/json
+    file: ieso-openid-configuration.json
+    note: RFC 8414 / OIDC Discovery 1.0. issuer https://gateway.ieso.ca
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    content_type: application/json
+    file: ieso-oauth-authorization-server.json
+    note: RFC 8414 authorization server metadata, same issuer.
+  - path: /.well-known/security.txt
+    status: 405
+    note: Okta rejects the path with errorCode E0000022 (endpoint does not support the method).
+- host: https://www.ieso.ca
+  role: corporate site and de facto developer surface
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 200
+    result: html_soft_200
+    note: Sitecore returns the site chrome, not a discovery document.
+  - path: /.well-known/api-catalog
+    status: 200
+    result: html_soft_200
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /llms.txt
+    status: 404
+  - path: /robots.txt
+    status: 200
+    note: Present. Disallows /xsl/, /temp/ and other internal paths. Not a well-known document.
+- host: https://reports-public.ieso.ca
+  role: anonymous public report repository
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/
+    status: 404
+- host: https://reports.ieso.ca
+  role: confidential participant report repository (Axway SecureTransport)
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    result: html_soft_200
+    note: SecureTransport serves the SAML login page for any unmatched path.
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    result: html_soft_200
+- host: https://online.ieso.ca
+  role: Online IESO participant portal (Appian)
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+security_txt: absent
+api_catalog: absent

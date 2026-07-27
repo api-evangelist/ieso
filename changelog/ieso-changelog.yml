@@ -1,0 +1,91 @@
+generated: '2026-07-27'
+method: searched
+source: https://www.ieso.ca/sector-participants/change-management/it-release-schedule
+docs: https://www.ieso.ca/Sector-Participants/Change-Management/Pending-Changes-Documents
+note: >-
+  IESO does not publish a developer changelog in the conventional sense. What it publishes instead is
+  a forward-dated IT Release Schedule plus a per-baseline Pending Changes package — a change log that
+  runs ahead of the change rather than behind it. Every entry below is taken verbatim from those two
+  pages on 2026-07-27; nothing has been back-filled or reconstructed.
+scheme: baseline release train, R<major>.<minor>
+current_baseline: R55.1
+next_baseline: R56.0
+cadence:
+  category_3: >-
+    Twice yearly. "Require market participants to make changes to their own technical interfaces."
+  category_2: >-
+    Four times yearly. "Require market participants to make a change in procedure or to update
+    documentation."
+stages: [Preliminary Plan, Feedback Period, Target Plan, Final Plan, Sandbox Implementation, Production Build]
+feedback_contact: pending.changes@ieso.ca
+entries:
+- version: R56.1
+  category: 2
+  production_build: '2026-12-02'
+  preliminary_plan: '2026-08-19'
+  final_plan: '2026-10-14'
+  sandbox: '2026-10-22'
+  breaking: false
+  highlights: [Procedure or documentation changes only; no participant technical-interface change required.]
+- version: R56.0
+  category: 3
+  production_build: '2026-09-09'
+  preliminary_plan: '2026-05-27'
+  final_plan: '2026-07-22'
+  sandbox: '2026-07-30'
+  comments_due: '2026-08-07'
+  breaking: true
+  breaking_note: Category 3 — requires market participants to change their own technical interfaces.
+  highlights:
+  - >-
+    SPEC467 Retrofit LDC API — "New LDC API in Retrofit based on eDSM contracts for marketing and
+    outreach". Replaces SPEC-188.
+  - >-
+    MM4.1 Dispatch Data Submission — "Resources may now submit reserve loading point values equal to
+    zero for synchronized ten-minute operating reserve offers." Affects market data submission through
+    the MIM web services.
+  - FORM128 CAA Application — IBR models for FACTS devices added.
+  - MM1.4 Connection Assessment and Approval — System Impact Assessment / Technical Feasibility Study deposit and invoicing updates.
+  - MM1.5 Market Registration — resource terminology consistency; reliable integration study deposit requirements.
+  - MM5.5 Settlement Amounts — modified ORCSB definition regarding inaccessible operating reserve.
+  - Charge Types and Equations List — Renewable Generation Connection Compensation (CT1463) adjustment.
+  - MM7.1 Grid Operating Procedures — new step added to the EOSCA List for Peak Perks activation.
+  - MM7.2 Near-Term Assessments — tie-line connection reference updates.
+  - MM7.4 Grid Operating Policies — NPCC Directory #1 alignment correction.
+  - MM14.2 Reference Level Procedures — sections 10.1 and 10.3 revisions.
+- version: R55.1
+  category: 2
+  production_build: '2026-06-03'
+  preliminary_plan: '2026-02-18'
+  final_plan: '2026-04-15'
+  sandbox: '2026-04-23'
+  breaking: false
+- version: R55.0
+  category: 3
+  production_build: '2026-03-04'
+  preliminary_plan: '2025-11-19'
+  final_plan: '2026-01-14'
+  sandbox: '2026-01-22'
+  breaking: true
+  breaking_note: Category 3 — participant technical-interface changes required.
+- version: R54.1
+  category: 2
+  production_build: '2025-12-03'
+  preliminary_plan: '2025-08-20'
+  final_plan: '2025-10-15'
+  sandbox: '2025-10-23'
+  breaking: false
+specification_revisions:
+- document: IMO_SPEC_0100 Outbound Automated Document API
+  issue: 9.0
+  date: '2025-03-05'
+  change: >-
+    "Updated to reflect various changes to the URL for IESO Reports Site (public reports and REST API
+    endpoint)."
+- document: IMO_SPEC_0100 Outbound Automated Document API
+  issue: 7.0
+  date: '2016-02-08'
+  change: Updated to document the IESO Report Site URL changes.
+- document: SPEC-232 Retrofit Service Provider API
+  date: '2024-12-04'
+  change: Specification updated.

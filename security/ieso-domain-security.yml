@@ -1,0 +1,27 @@
+generated: '2026-07-27'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: www.ieso.ca
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Dec 16 23:59:59 2026 GMT
+  hsts: false
+- host: reports-public.ieso.ca
+  https: true
+  tls_version: TLSv1.2
+  cert_expires: Aug 18 23:59:59 2026 GMT
+  hsts: false
+- host: reports.ieso.ca
+  https: true
+  tls_version: TLSv1.2
+  cert_expires: Oct 22 23:59:59 2026 GMT
+  hsts: true
+  hsts_max_age: 15768000
+domains:
+- domain: ieso.ca
+  dnssec: false
+  caa: []
+  spf: true
+  dmarc: true
+  dmarc_policy: none

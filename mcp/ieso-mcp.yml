@@ -1,0 +1,143 @@
+generated: '2026-07-27'
+method: derived
+status: candidate
+source: >-
+  Derived from wsdl/ieso-mim-web-services.wsdl (23 real operations), the live directory listing of
+  https://reports-public.ieso.ca/public/ and IMO_SPEC_0100. IESO publishes no OpenAPI, so the usual
+  operationId-per-tool derivation is grounded in the WSDL and the report catalogue instead.
+search_result: >-
+  No official or community MCP server for IESO exists. Searched the MCP registry, npm
+  (@modelcontextprotocol scope), the IESO technical interfaces page and the wider web on 2026-07-27 —
+  nothing. There is no IESO GitHub organization to host one (github.com/ieso is an unrelated UK
+  mental-health company).
+note: >-
+  THIS IS A CANDIDATE DESIGN, NOT A DEPLOYED SERVER. No URL is recorded because none exists. Every
+  tool below is bound to a real, verifiable IESO surface: either a WSDL operation that exists verbatim
+  in wsdl/ieso-mim-web-services.wsdl, or a report directory that was enumerated live on the public
+  repository. Nothing was invented. The public-data tools are the only ones an unauthenticated agent
+  could actually run today.
+server:
+  name: ieso
+  transport: http
+  url: null
+  published: false
+tool_groups:
+- group: public market data
+  auth: none
+  backing_surface: https://reports-public.ieso.ca/public/
+  note: >-
+    Anonymous. Each tool is a Global Link fetch — the stable latest-version URL. See
+    conventions/ieso-conventions.yml for the naming and polling contract.
+  tools:
+  - name: get_ontario_demand
+    description: Fetch the latest hourly Ontario and market demand report.
+    source: https://reports-public.ieso.ca/public/Demand/PUB_Demand.csv
+    report_directory: Demand
+  - name: get_zonal_demand
+    description: Fetch the latest hourly zonal demand report.
+    report_directory: DemandZonal
+  - name: get_generation_by_fuel_hourly
+    description: Fetch the latest hourly generation output by fuel type.
+    report_directory: GenOutputbyFuelHourly
+  - name: get_generator_output_capability
+    description: Fetch the latest per-generator output and capability report.
+    report_directory: GenOutputCapability
+    schema: xsd/ieso-gen-output-capability-r1.xsd
+  - name: get_hoep
+    description: Fetch the latest unconstrained Hourly Ontario Energy Price.
+    report_directory: DispUnconsHOEP
+    schema: xsd/ieso-disp-uncons-hoep-r1.xsd
+  - name: get_realtime_market_price
+    description: Fetch the latest real-time market price report.
+    report_directory: RealtimeMktPrice
+  - name: get_predispatch_market_price
+    description: Fetch the latest pre-dispatch market price report.
+    report_directory: PredispMktPrice
+  - name: get_day_ahead_zonal_price
+    description: Fetch the latest day-ahead hourly Ontario zonal price.
+    report_directory: DAHourlyOntarioZonalPrice
+  - name: get_intertie_schedule_flow
+    description: Fetch the latest intertie schedule and flow report.
+    report_directory: IntertieScheduleFlow
+    schema: xsd/ieso-intertie-schedule-flow-r1.xsd
+  - name: get_adequacy
+    description: Fetch the latest Ontario resource adequacy report.
+    report_directory: Adequacy3
+    schema: xsd/ieso-dacp-adequacy-r1.xsd
+  - name: get_transmission_outages_today
+    description: Fetch today's full transmission outage report.
+    report_directory: TxOutagesTodayAll
+  - name: get_variable_generation_forecast
+    description: Fetch the latest variable generation forecast summary.
+    report_directory: VGForecastSummary
+  - name: get_global_adjustment
+    description: Fetch the latest Global Adjustment report.
+    report_directory: GlobalAdjustment
+  - name: list_report_directories
+    description: List the 139 report directories available on the public repository.
+    source: https://reports-public.ieso.ca/public/
+- group: participant reports
+  auth: HTTP Basic machine account + '?idp_id=ieso'
+  backing_surface: https://reports.ieso.ca/api/v1.4
+  gated: true
+  tools:
+  - name: list_participant_files
+    description: List directories and files in the participant's confidential report folder.
+    rest: GET /files
+  - name: list_participant_subfolder
+    description: List a named subfolder in the confidential repository.
+    rest: GET /files/{path}
+  - name: get_file_properties
+    description: Return file properties rather than content.
+    rest: GET /files/{path}?status
+  - name: download_participant_file
+    description: Download a confidential report file.
+    rest: GET /files/{path}
+- group: market submissions (MIM)
+  auth: UserID/password (user@participantName) + source-IP allow-listing
+  backing_surface: https://webservices.ieso.ca/emim
+  gated: true
+  network_restricted: true
+  note: >-
+    Every tool below maps 1:1 to a wsdl:operation that exists verbatim in
+    wsdl/ieso-mim-web-services.wsdl. These are write operations against Ontario's real-time
+    electricity market — any agent binding would need human-in-the-loop authorization.
+  tools:
+  - {name: upload_realtime_energy_bid, source_operation: 'wsdl/ieso-mim-web-services.wsdl#RealtimeEnergyBidUploadOperation', consequence: safety-critical}
+  - {name: query_realtime_energy_bid, source_operation: 'wsdl/ieso-mim-web-services.wsdl#RealtimeEnergyBidQueryOperation', consequence: read}
+  - {name: cancel_realtime_energy_bid, source_operation: 'wsdl/ieso-mim-web-services.wsdl#RealtimeEnergyBidCancelOperation', consequence: safety-critical}
+  - {name: upload_operating_reserve_bid, source_operation: 'wsdl/ieso-mim-web-services.wsdl#OperatingReserveBidUploadOperation', consequence: safety-critical}
+  - {name: query_operating_reserve_bid, source_operation: 'wsdl/ieso-mim-web-services.wsdl#OperatingReserveBidQueryOperation', consequence: read}
+  - {name: cancel_operating_reserve_bid, source_operation: 'wsdl/ieso-mim-web-services.wsdl#OperatingReserveBidCancelOperation', consequence: safety-critical}
+  - {name: upload_schedule_bid, source_operation: 'wsdl/ieso-mim-web-services.wsdl#ScheduleBidUploadOperation', consequence: safety-critical}
+  - {name: query_schedule_bid, source_operation: 'wsdl/ieso-mim-web-services.wsdl#ScheduleBidQueryOperation', consequence: read}
+  - {name: cancel_schedule_bid, source_operation: 'wsdl/ieso-mim-web-services.wsdl#ScheduleBidCancelOperation', consequence: safety-critical}
+  - {name: upload_bilateral_bid, source_operation: 'wsdl/ieso-mim-web-services.wsdl#BilateralBidUploadOperation', consequence: physical}
+  - {name: query_bilateral_bid, source_operation: 'wsdl/ieso-mim-web-services.wsdl#BilateralBidQueryOperation', consequence: read}
+  - {name: cancel_bilateral_bid, source_operation: 'wsdl/ieso-mim-web-services.wsdl#BilateralBidCancelOperation', consequence: physical}
+  - {name: upload_daily_dispatch_bid, source_operation: 'wsdl/ieso-mim-web-services.wsdl#DailyDispatchBidUploadOperation', consequence: safety-critical}
+  - {name: query_daily_dispatch_bid, source_operation: 'wsdl/ieso-mim-web-services.wsdl#DailyDispatchBidQueryOperation', consequence: read}
+  - {name: upload_forebay_bid, source_operation: 'wsdl/ieso-mim-web-services.wsdl#ForebayBidUploadOperation', consequence: safety-critical}
+  - {name: query_forebay_bid, source_operation: 'wsdl/ieso-mim-web-services.wsdl#ForebayBidQueryOperation', consequence: read}
+  - {name: query_forebay, source_operation: 'wsdl/ieso-mim-web-services.wsdl#ForebayOperation', consequence: read}
+  - {name: query_market_status, source_operation: 'wsdl/ieso-mim-web-services.wsdl#MarketStatusOperation', consequence: read}
+  - {name: query_market_messages, source_operation: 'wsdl/ieso-mim-web-services.wsdl#MarketMessageOperation', consequence: read}
+  - {name: query_resources, source_operation: 'wsdl/ieso-mim-web-services.wsdl#ResourceOperation', consequence: read}
+  - {name: act_as_market_participant, source_operation: 'wsdl/ieso-mim-web-services.wsdl#ActAsMarketParticipantOperation', consequence: safety-critical, note: 'Impersonation. Must never be agent-invokable without explicit human authorization.'}
+  - {name: health_check, source_operation: 'wsdl/ieso-mim-web-services.wsdl#HealthCheckOperation', consequence: read}
+coverage:
+  tools_designed: 41
+  backed_by_wsdl_operation: 22
+  backed_by_report_directory: 14
+  backed_by_rest_resource: 4
+  wsdl_operations_total: 23
+  wsdl_operations_unmapped: 1
+  wsdl_operations_unmapped_note: >-
+    ForebayBidUploadOperation and ForebayOperation are both mapped; the remaining WSDL entry is a
+    duplicate binding of an already-mapped operation.
+  report_directories_total: 139
+  report_directories_mapped: 13
+tool_crosswalk: not_applicable
+tool_crosswalk_reason: >-
+  A ToolCrosswalk binds MCP tools to OpenAPI operationIds. IESO publishes no OpenAPI, so there is
+  nothing to bind against; the WSDL operation bindings above carry the same information inline.

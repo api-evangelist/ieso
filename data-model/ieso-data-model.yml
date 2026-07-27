@@ -1,0 +1,199 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  xsd/*.xsd (14 harvested schemas), wsdl/ieso-mim-web-services.wsdl, the live directory listing of
+  https://reports-public.ieso.ca/public/ (139 directories enumerated 2026-07-27) and IMO_SPEC_0100
+docs: https://www.ieso.ca/en/Power-Data/Data-Directory
+note: >-
+  IESO publishes no OpenAPI, so this entity graph is derived from the XML Schema definitions and the
+  WSDL rather than from schema $ref links. Two independent object models exist in the estate and they
+  do not share types: the automated-document model that governs every published report, and the MIM
+  bid/offer model that governs participant submissions. Both are read directly out of the harvested
+  files; report families are grouped from the real directory names on the public repository.
+
+document_model:
+  description: >-
+    Every IESO automated document is an envelope of repeating header/body pairs. Two generations of
+    the envelope are live side by side — the current ieso.ca namespace and the legacy theIMO.com
+    namespace — with identical structure and one enum difference.
+  namespaces:
+    current: http://www.ieso.ca/schema
+    legacy: http://www.theIMO.com/schema
+  entities:
+  - name: Document
+    schema: xsd/ieso-document-r1.xsd
+    namespace: http://www.ieso.ca/schema
+    attributes:
+    - {name: docID, type: 'string, pattern [a-zA-Z0-9]{1,100}'}
+    note: Sequence of (DocHeader, DocBody) repeated 1..unbounded.
+  - name: IMODocument
+    schema: xsd/ieso-imo-document-r1.xsd
+    namespace: http://www.theIMO.com/schema
+    attributes:
+    - {name: docID, type: 'string, pattern [a-zA-Z0-9]{1,100}'}
+    note: Legacy twin of Document. Sequence of (IMODocHeader, IMODocBody) repeated 1..unbounded.
+  - name: DocHeader
+    fields: [DocTitle, DocRevision, DocConfidentiality, CreatedAt]
+    field_types:
+      DocTitle: 'xs:string'
+      DocRevision: 'xs:integer, minInclusive 1'
+      CreatedAt: 'xs:dateTime'
+  - name: DocConfidentiality
+    fields: [DocConfClass, DocConfGroups]
+    note: DocConfGroups is optional (minOccurs 0) and carries one or more DocConfGroup strings.
+  - name: DocBody
+    note: >-
+      Abstract in practice — each report schema redefines DocBody (or IMODocBody) with its own
+      payload. This is the extension point of the whole model.
+  enums:
+    ConfidentialityClass:
+      current: [PUB, CNF, HCNF, INT]
+      legacy: [PUB, CNF, HCNF]
+      meaning: {PUB: public, CNF: confidential, HCNF: highly confidential, INT: internal}
+      note: >-
+        This enum is the machine-readable expression of the split that defines IESO's whole API
+        posture — PUB documents land in the anonymous repository, everything else in the
+        participant-gated one.
+  relationships:
+  - {from: Document, to: DocHeader, kind: has_many, via: sequence}
+  - {from: Document, to: DocBody, kind: has_many, via: sequence}
+  - {from: DocHeader, to: DocConfidentiality, kind: has_one, via: element ref}
+  - {from: DocConfidentiality, to: DocConfClass, kind: has_one, via: element ref}
+  - {from: DocConfidentiality, to: DocConfGroups, kind: has_one, via: element ref, optional: true}
+  - {from: DocConfGroups, to: DocConfGroup, kind: has_many, via: element ref}
+  - {from: IMODocument, to: IMODocHeader, kind: has_many, via: sequence}
+  - {from: IMODocument, to: IMODocBody, kind: has_many, via: sequence}
+
+report_schemas:
+  description: >-
+    Twelve report-specific schemas are harvested. Each imports one of the two envelopes and
+    specialises DocBody/IMODocBody. Two payload shapes recur across them.
+  recurring_types:
+  - name: HourlyValue
+    used_by:
+    - xsd/ieso-dacp-adequacy-r1.xsd
+    - xsd/ieso-dacp-commit-r1.xsd
+    - xsd/ieso-dacp-predisp-energy-r1.xsd
+    - xsd/ieso-dacp-reliability-commit-r1.xsd
+    - xsd/ieso-financial-binding-status-r1.xsd
+    note: The hour-indexed value is the atomic unit of nearly every IESO market report.
+  - name: PriceQuantity
+    used_by: [xsd/ieso-dacp-check-source-ade-r1.xsd]
+  schemas:
+  - {file: xsd/ieso-dacp-adequacy-r1.xsd, envelope: Document, extends: DocBody}
+  - {file: xsd/ieso-dacp-check-source-ade-r1.xsd, envelope: Document, extends: DocBody}
+  - {file: xsd/ieso-dacp-commit-r1.xsd, envelope: Document, extends: DocBody}
+  - {file: xsd/ieso-dacp-predisp-energy-r1.xsd, envelope: Document, extends: DocBody}
+  - {file: xsd/ieso-dacp-predisp-prices-r1.xsd, envelope: Document, extends: DocBody}
+  - {file: xsd/ieso-dacp-reliability-commit-r1.xsd, envelope: Document, extends: DocBody}
+  - {file: xsd/ieso-financial-binding-status-r1.xsd, envelope: Document, extends: DocBody}
+  - {file: xsd/ieso-disp-advisory-r1.xsd, envelope: IMODocument, extends: IMODocBody}
+  - {file: xsd/ieso-disp-uncons-hoep-r1.xsd, envelope: IMODocument, extends: IMODocBody}
+  - {file: xsd/ieso-gen-output-capability-r1.xsd, envelope: IMODocument, extends: IMODocBody}
+  - {file: xsd/ieso-intertie-schedule-flow-r1.xsd, envelope: IMODocument, extends: IMODocBody}
+
+report_catalogue:
+  source: https://reports-public.ieso.ca/public/
+  enumerated: '2026-07-27'
+  directory_count: 139
+  addressing: >-
+    One directory per Document Identifier. The directory name IS the identifier used in the filename
+    convention, so the catalogue below is also the key space for constructing URLs. See
+    conventions/ieso-conventions.yml.
+  families:
+  - name: Day-Ahead Market
+    prefix: DA
+    directories: [DAAreaOpResShortfall, DAAreaOpResShortfall2, DAAreaReserveConst, DAAreaReserveConst2, DAConstTotals, DAConstrShadowPrices, DADynamicConstrainedAreas, DAGMPCSum, DAHourlyEnergyLMP, DAHourlyIntertieLMP, DAHourlyIntertieORLMP, DAHourlyIntertiePass1LMP, DAHourlyIntertiePass1ORLMP, DAHourlyORLMP, DAHourlyOntarioZonalPrice, DAHourlyZonal, DAIntertieSchedLimits, DAIntertieSchedLimits2, DASecurityConstraints, DASecurityConstraints2, DAShadowPrices, DATotals, DAVirtualTransactions]
+  - name: Pre-Dispatch
+    prefix: Predisp / PreDA
+    directories: [PreDAAreaReserveConstraint, PreDAIntertieSchedLimits, PredispAreaOpResShortfalls, PredispAreaReserveConst, PredispConstTotals, PredispDRSchedules, PredispHourlyEnergyLMP, PredispHourlyIntertieLMP, PredispHourlyIntertieORLMP, PredispHourlyORLMP, PredispHourlyOntarioZonalPrice, PredispHourlyZonal, PredispIntertieSchedLimits, PredispMktPrice, PredispMktTotals, PredispSecurityConstraints, PredispSecurityConstraints2, PredispShadowPrices, PredispTotals]
+  - name: Real-Time Market
+    prefix: Realtime / RealTime
+    directories: [RealTimeIntertieLMP, RealTimeIntertieORLMP, RealtimeAreaReserveConst, RealtimeConstORIM, RealtimeConstTotals, RealtimeConstrShadowPrices, RealtimeConstrainedAreas, RealtimeDemandZonal, RealtimeEnergyLMP, RealtimeGMPCSum, RealtimeIntertieSchedLimits, RealtimeMktDisaggPrice, RealtimeMktORIM, RealtimeMktPrice, RealtimeMktPriceYear, RealtimeMktTotals, RealtimeORIM, RealtimeORLMP, RealtimeOntarioZonalPrice, RealtimeShadowPrices, RealtimeTotals, RealtimeZonalEnergyPrices]
+  - name: Demand and Consumption
+    directories: [Demand, DemandZonal, HourlyConsumptionByFSA, ICIDemand, ICIPeakTracker, IndustrLoadBySector, OntarioElectEnergy, TTDC-PeakSystemDemand-Final, TTDC-PeakSystemDemand-Prelim]
+    note: 'Demand is the marquee public dataset — PUB_Demand.csv is the Global Link to the latest hourly Ontario and market demand.'
+  - name: Generation and Fuel Mix
+    directories: [GenOutputCapability, GenOutputCapabilityMonth, GenOutputbyFuelHourly, GenOutputbyFuelMonthly, VGForecastSummary, VGTieBreakingRankings]
+  - name: Prices and Uplift
+    directories: [DispUnconsHOEP, GlobalAdjustment, PriceDeltaVirtualTransactionDaily, PriceDeltaVirtualTransactionYearly, PriceHOEPAverage, PriceHOEPPredispOR, PriceNodal, Uplift]
+  - name: Dispatch
+    directories: [DispAreaOpResAndEnergyCalled, DispAreaOpResShortfalls, DispDeviation, DispSecurityConstraints, DispSecurityConstraints2]
+  - name: Intertie
+    directories: [IntertieEconWithholdingSum, IntertieScheduleFlow, IntertieScheduleFlowYear]
+  - name: Adequacy
+    directories: [Adequacy2, Adequacy3, AdjustedAQEW]
+  - name: Outages and Transmission Limits
+    directories: [TxLimitsAllInService0to34Days, TxLimitsOutage0to2Days, TxLimitsOutage3to34Days, TxOutages1to30DaysPlanned, TxOutages31to90DaysPlanned, TxOutages91to180DaysPlanned, TxOutages181to730DaysPlanned, TxOutagesTodayAll]
+    note: >-
+      The read side of the Outage Coordination and Scheduling System. The write surface (SPEC-113) is
+      participant-gated; the resulting data is republished here anonymously.
+  - name: Settlement and Charges
+    directories: [DailyUpliftSettlChargesLTD, DailyUpliftSettlChargesYTD, HourlyAndMonthlyCharges, HourlyIOGChargesLTD, HourlyIOGChargesYTD, HourlyLFDA, HourlyLFDALTD, HourlyUpliftSettlChargesLTD, HourlyUpliftSettlChargesYTD, MonthlyLFDA, MonthlyUpliftSettlChargesLTD, MonthlyUpliftSettlChargesYTD]
+  - name: Transmission Rights Auction
+    prefix: TRA
+    directories: [TRAMonthlyFinancial, TRAPostauctionMCPLTr1, TRAPostauctionMCPLTr2, TRAPostauctionMCPSTr1, TRAPreauctionHZMCPMonthly, TRAPreauctionInterfaceHistoryMonthly, TRAPreauctionInterfaceHistoryMonthly2, TRAPreauctionMCPLT, TRAPreauctionMCPST, TRAPreauctionTTCLT, TRAPreauctionTTCST]
+  - name: Capacity and Demand Response Auctions
+    directories: [CA-PostAuction, CA-PreAuction, DR-PostAuctionSummary, DR-PreAuction]
+  - name: Market Surveillance
+    directories: [EconWithHoldSum, MonthlyPhysicalWithholding, NISLShadowPrices, NarrowConstrainedAreas]
+  - name: Weekly Summaries
+    directories: [WeeklyMarket, WeeklyMarket2]
+
+mim_model:
+  description: >-
+    The participant submission model, read from xsd/ieso-mim-web-services.xsd (62 complex types, 267
+    elements). Organised as five bid domains, each with a Submit / Query / Set / Cancel type family.
+  source: xsd/ieso-mim-web-services.xsd
+  domains:
+  - name: Realtime Energy
+    types: [RealtimeEnergyBidSubmitType, RealtimeEnergyBidQueryType, RealtimeEnergyBidSetType, RealtimeEnergyBidCancelType, RealtimeEnergySubmitHourlyType, RealtimeEnergyCancelHourlyType]
+  - name: Operating Reserve
+    types: [OperatingReserveBidSubmitType, OperatingReserveBidQueryType, OperatingReserveBidSetType, OperatingReserveBidCancelType, OperatingReserveSubmitHourlyType, OperatingReserveCancelHourlyType]
+  - name: Schedule
+    types: [ScheduleBidSubmitType, ScheduleBidQueryType, ScheduleBidSetType, ScheduleBidCancelType, ScheduleSubmitHourlyType]
+  - name: Bilateral
+    types: [BilateralBidSubmitType, BilateralBidQueryType, BilateralBidSetType, BilateralBidCancelType, BilateralSubmitHourlyType]
+  - name: Daily Dispatch Data
+    types: [DailyDispatchBidSubmitType, DailyDispatchBidQueryType, DailyDispatchBidSetType]
+  - name: Forebay
+    types: [ForebayBidSubmitType, ForebayBidQueryType, ForebayBidSetType, ForebayQueryType, ForebaySetType, LinkedForebayType]
+  - name: Reference and Status
+    types: [ResourceQueryType, ResourceSetType, ResType, MarketStatusType, MarketDetailType, MarketWindowType, MarketMessageQueryType, MarketMessageSetType, MarketMessageType, ActAsMarketParticipantQueryType, ActAsMarketParticipantSetType, ActAsMarketParticipantType, HealthCheckInfoType]
+  shared_value_types:
+  - {name: PriceQuantityType, note: The price/quantity pair every offer curve is built from.}
+  - {name: QueryDateType, note: Date selector on every Query operation.}
+  - {name: UploadDateType, note: Date selector on every Upload operation.}
+  - {name: QueryStandingType, note: Distinguishes standing from day-specific submissions.}
+  ramp_and_physical_types:
+  - DailyEnergyRampRateType
+  - HourlyEnergyRampRateType
+  - RampUpEnergyToMlpType
+  - RampUpToMlpColdType
+  - RampUpToMlpWarmType
+  - RampUpToMlpHotType
+  - MinGenBlockDownTimeType
+  - ForbiddenRegionType
+  - LeadTimeType
+  - StartUpOfferType
+  status_types:
+  - {name: BidProcessingStatusType, fields: [SubmissionTime, TransactionId, 'Message[1..n]'], note: 'Returned on both the success and the fault path. See errors/ieso-error-codes.yml.'}
+  - {name: MessageType, fields: [Severity, Code, Description, 'Hour?'], severity_enum: [INFO, WARN, ERROR]}
+  relationships:
+  - {from: BidProcessingStatusType, to: MessageType, kind: has_many, via: Message}
+  - {from: RealtimeEnergyBidSubmitType, to: RealtimeEnergySubmitHourlyType, kind: has_many, via: hourly submission}
+  - {from: OperatingReserveBidSubmitType, to: OperatingReserveSubmitHourlyType, kind: has_many, via: hourly submission}
+  - {from: ScheduleBidSubmitType, to: ScheduleSubmitHourlyType, kind: has_many, via: hourly submission}
+  - {from: BilateralBidSubmitType, to: BilateralSubmitHourlyType, kind: has_many, via: hourly submission}
+  - {from: ForebayBidSubmitType, to: LinkedForebayType, kind: has_many, via: linked forebay}
+  - {from: ResourceSetType, to: ResType, kind: has_many, via: resource list}
+  - {from: MarketStatusType, to: MarketDetailType, kind: has_many, via: market list}
+  - {from: MarketDetailType, to: MarketWindowType, kind: has_many, via: window list}
+  - {from: MarketMessageSetType, to: MarketMessageType, kind: has_many, via: message list}
+
+join_keys:
+  note: >-
+    The two models meet only in the domain, not in the schema. There is no shared identifier type
+    between a MIM submission and a published report; correlation is by resource name, delivery date
+    and delivery hour.
+  keys: [resource name, delivery date, delivery hour, market (DAM / Pre-Dispatch / Real-Time)]

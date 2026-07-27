@@ -1,0 +1,119 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  IESO published interface specifications (IMO_SPEC_0100, IESO_Reports_API_Guide, SPEC-249, SPEC-188,
+  MWT-User-Guide) plus anonymous probes of every host and the live OIDC discovery document at
+  gateway.ieso.ca
+docs: https://www.ieso.ca/sector-participants/technical-interfaces
+note: >-
+  Derived mechanically from OpenAPI is not possible here — IESO publishes no OpenAPI. This profile is
+  read from IESO's own published interface specifications and confirmed by live probes. The estate has
+  four distinct authentication models and one genuinely unauthenticated surface.
+summary:
+  types: [none, http, apiKey, oauth2, openIdConnect]
+  api_key_in: [header, basic-username]
+  oauth2_flows: [authorizationCode, implicit, refreshToken, password, deviceCode]
+  anonymous_surfaces: 1
+  self_serve_credentials: false
+  credential_issuance: >-
+    No self-serve signup for any authenticated surface. Machine accounts and API keys are issued by
+    the IESO on request, and for the Online IESO APIs must be requested by the participant
+    organization's registered Rights Administrator.
+schemes:
+- name: public-report-repository-anonymous
+  type: none
+  applies_to: ieso:ieso-public-reports-repository
+  hosts: [https://reports-public.ieso.ca, https://reports-public-sandbox.ieso.ca]
+  description: >-
+    No authentication of any kind. IMO_SPEC_0100 section 3 states "All market participants, and in
+    general, the public, have access to public report repository." Verified HTTP 200 anonymously on
+    2026-07-27 on both the directory index and a live data file. No account, key, cookie, referrer
+    check or terms click-through.
+  evidence: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/xml-automated-docs/IMO_SPEC_0100.pdf
+- name: reports-api-basic
+  type: http
+  scheme: basic
+  applies_to: ieso:ieso-reports-site-rest-api
+  hosts: [https://reports.ieso.ca, https://reports-sandbox.ieso.ca]
+  description: >-
+    HTTP Basic credentials on every request to the Axway SecureTransport REST API, plus the mandatory
+    query string parameter ?idp_id=ieso appended to every request. The IESO Reports API Guide states
+    "The market participant must have a valid user name and password in order to access the
+    confidential report repository (upon request the IESO shall provide the market participant with a
+    machine account)."
+  required_query_parameter: idp_id=ieso
+  probe:
+    url: https://reports.ieso.ca/api/v1.4/files?idp_id=ieso
+    status: 401
+    date: '2026-07-27'
+  evidence: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/api-reports-guide/IESO_Reports_API_Guide.pdf
+- name: reports-sftp
+  type: http
+  scheme: sftp-password
+  applies_to: ieso:ieso-reports-site-rest-api
+  hosts: [reports.ieso.ca:22]
+  description: >-
+    A second access interface to the same confidential repository. SSH File Transfer Protocol on port
+    22 with the same machine API account username and password. Documented in the IESO Reports API
+    Guide, "Access Interface - SFTP".
+  evidence: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/api-reports-guide/IESO_Reports_API_Guide.pdf
+- name: appian-api-key
+  type: apiKey
+  applies_to:
+  - ieso:ieso-registration-facilities-api
+  - ieso:ieso-retrofit-api
+  - ieso:ieso-retrofit-service-provider-api
+  hosts: [https://online.ieso.ca, https://onlinesandbox.ieso.ca]
+  description: >-
+    Appian API key, accepted three ways per SPEC-249: HTTP Basic with the API key as the username and
+    a blank password (or the reverse), an Appian-API-Key request header, or an Authorization Bearer
+    header. HTTPS is mandatory. A missing or invalid Authorization header returns 401.
+  in: [header, basic-username]
+  parameter_names: [Appian-API-Key, Authorization]
+  issuance: >-
+    The organization's registered IESO Rights Administrator must request an API machine account with
+    "Registration API" access. No self-serve issuance.
+  evidence: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/registration-system/FacilityAPISpecification-SPEC-249.pdf
+- name: mim-userid-password-plus-ip-allowlist
+  type: http
+  scheme: ws-security-userid-password
+  applies_to: ieso:ieso-mim-web-services
+  hosts: [https://webservices.ieso.ca, https://webservices-sandbox.ieso.ca, https://webservices-sandboxmrp.ieso.ca]
+  description: >-
+    SOAP endpoint secured by an IESO UserID and password in the format user@participantName, combined
+    with source IP address allow-listing and a client truststore. IESO's technical interfaces page
+    states the MIM web services require "UserID/Password and whitelisted client machine IP address".
+    Neither the production nor sandbox host connected from the open internet on 2026-07-27 (curl exit
+    000), consistent with network-level restriction.
+  username_format: user@participantName
+  transport_controls: [ip-allowlist, client-truststore, tls]
+  evidence: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/mp-submissions/MWT-User-Guide.pdf
+- name: ieso-gateway-oidc
+  type: openIdConnect
+  applies_to: participant web applications (reports.ieso.ca, online.ieso.ca)
+  openIdConnectUrl: https://gateway.ieso.ca/.well-known/openid-configuration
+  issuer: https://gateway.ieso.ca
+  description: >-
+    The Okta-hosted identity provider that fronts interactive participant login. reports.ieso.ca
+    auto-POSTs a SAML2 AuthnRequest to this gateway. The OIDC/OAuth 2.0 discovery documents are served
+    anonymously and are harvested to well-known/. This is the human login path, not the machine-account
+    path used by the documented APIs.
+  authorization_endpoint: https://gateway.ieso.ca/oauth2/v1/authorize
+  token_endpoint: https://gateway.ieso.ca/oauth2/v1/token
+  userinfo_endpoint: https://gateway.ieso.ca/oauth2/v1/userinfo
+  jwks_uri: https://gateway.ieso.ca/oauth2/v1/keys
+  introspection_endpoint: https://gateway.ieso.ca/oauth2/v1/introspect
+  revocation_endpoint: https://gateway.ieso.ca/oauth2/v1/revoke
+  device_authorization_endpoint: https://gateway.ieso.ca/oauth2/v1/device/authorize
+  registration_endpoint: https://gateway.ieso.ca/oauth2/v1/clients
+  grant_types_supported: [authorization_code, implicit, refresh_token, password, 'urn:ietf:params:oauth:grant-type:device_code']
+  token_endpoint_auth_methods_supported: [client_secret_basic, client_secret_post, client_secret_jwt, private_key_jwt, none]
+  code_challenge_methods_supported: [S256]
+  dpop_supported: true
+  source: well-known/ieso-openid-configuration.json
+gaps:
+- No API key or token can be obtained self-serve anywhere in the estate.
+- No mTLS scheme is documented for any interface.
+- >-
+  The scopes advertised by gateway.ieso.ca are the stock OIDC set; IESO publishes no
+  API-specific authorization scope catalogue. See scopes/ieso-scopes.yml.

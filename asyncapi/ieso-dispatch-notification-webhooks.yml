@@ -1,0 +1,119 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  SPEC-155 "Dispatch Notification Service Web Service Design Specifications", Issue 4.0, February 26,
+  2025 — https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/dispatch-service-system/SPEC-155-Dispatch-Notification-Service-Web-Service-Design-Specifications.pdf
+docs: https://www.ieso.ca/sector-participants/technical-interfaces
+note: >-
+  IESO publishes no AsyncAPI document, and none has been fabricated. What it DOES publish is a real
+  reverse-direction callback contract: SPEC-155 specifies a web service that the MARKET PARTICIPANT
+  hosts and the IESO calls, pushing dispatch instructions in real time. That is a webhook in every
+  sense except the transport — it is SOAP rather than JSON over HTTP POST — so it is captured here as
+  a webhook catalogue with the full published payload contract. Every field, type, cardinality and
+  enumeration below is transcribed from SPEC-155 section 2 and 3.
+kind: webhooks
+transport: SOAP over HTTPS
+direction: provider-to-consumer (IESO calls the participant)
+hosted_by: market participant
+spec_version: '4.0'
+spec_date: '2025-02-26'
+timezone: >-
+  All times in SPEC-155 are Eastern Standard Time (EST), per the document's stated conventions.
+
+registration:
+  self_serve: false
+  process: >-
+    A participant wishing to set up the Dispatch Notification System provides IESO with three things:
+    IP allow-listing requirements, a username and password for the IESO to use when calling the
+    participant's service, and the web service endpoint for both the Dev and Production environments.
+  environments: [Dev, Production]
+  authentication: HTTP username/password supplied by the participant to the IESO, plus IP allow-listing.
+
+relationship_to_polling:
+  note: >-
+    The notification service does not replace the Dispatch Service Web Service (SPEC-154). The
+    participant still sends its response to each dispatch instruction back through SPEC-154. Push is
+    for delivery; the acknowledgement path stays request/response.
+  companion_spec: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/dispatch-service-system/SPEC-154-Dispatch-Service-Web-Service-Design-Specifications.pdf
+
+webhooks:
+- name: newDispatches
+  operation: newDispatches
+  description: >-
+    Allows the IESO to send new dispatch instructions to the market participant. This is the machine
+    channel through which Ontario's grid is dispatched in real time.
+  payload:
+    root: DispatchInstructions
+    cardinality: 0..*
+    item: DispatchInstruction
+    item_cardinality: 0..*
+  response:
+    fields:
+    - {name: Confirmed, type: Boolean, cardinality: 1}
+  fault: none
+  delivery_rules:
+  - 'IESO will consider any non "confirmed" responses as delivery failures.'
+  - 'IESO will not process any SOAP faults returned from the web service.'
+  operational_guidance: >-
+    "Dispatch instructions can become large in size, if the Dispatch Notification Service is not
+    configured properly error may occur when a set of new dispatches is received. It is recommended to
+    properly set the HTTPS request limit on the server which is hosting Dispatch Notification Service
+    to avoid potential errors."
+
+schemas:
+  DispatchInstruction:
+    fields:
+    - {name: MESSAGE_ID, type: String, cardinality: 0..1, description: Unique identifier assigned to the dispatch instruction}
+    - {name: PARTICIPANT_NAME, type: String, cardinality: 0..1, description: Market Participant Short Name}
+    - {name: DATE_SENT, type: DateTime, cardinality: 0..1, description: Date/time the dispatch was issued by the IESO}
+    - {name: DISPATCH_TYPE, type: DispatchType, cardinality: 0..1}
+    - {name: STATE, type: DispatchState, cardinality: 0..1}
+    - {name: ACTIVE, type: Boolean, cardinality: 0..1, description: Whether the dispatch is the last confirmed dispatch for the resource per dispatch type}
+    - {name: RESOURCE_ID, type: String, cardinality: 0..1, description: Name of the resource being dispatched}
+    - {name: DELIVERY_DATE, type: DateTime, cardinality: 0..1, format: YYYY-MM-DD}
+    - {name: DELIVERY_HOUR, type: Integer, cardinality: 0..1, min: 1, max: 24}
+    - {name: DELIVERY_INTERVAL, type: Integer, cardinality: 0..1, min: 1, max: 12, description: The five-minute interval the dispatch applies to}
+    - {name: DELIVERY_START_TIME, type: DateTime, cardinality: 0..1, format: 'YYYY-MM-DDTHH:MM:SS', description: Start time requests are associated with dispatches for contract activation}
+    - {name: DELIVERY_STOP_TIME, type: DateTime, cardinality: 0..1, format: 'YYYY-MM-DDTHH:MM:SS'}
+    - {name: AMOUNT, type: Double, cardinality: 0..1, description: Value assigned to the dispatch; content depends on dispatch type}
+    - {name: LIMIT_TYPE, type: LimitType, cardinality: 0..1}
+    - {name: VG_OI, type: String, cardinality: 0..1, description: 'Variable Generation Obligation Indicator — Mandatory, Release, or null for non-Variable Generators'}
+    - {name: RESERVE_CLASS, type: String, cardinality: 0..1, description: Class of reserve requested in a RESV type dispatch}
+    - {name: REGULATION_RANGE, type: Double, cardinality: 0..1}
+    - {name: RESPONDER, type: String, cardinality: 0..1, description: 'Username of the user that responded to the dispatch instruction (section 2 notes it is not used and left blank)'}
+    - {name: EXPIRES_AT, type: DateTime, cardinality: 0..1, description: End of the active window / when the dispatch instruction expires}
+    - {name: EFFECTIVE_TIME, type: DateTime, cardinality: 0..1, description: 'Time associated with the Product (START, EXTEND, DECOM)'}
+    - {name: MLP_TIME, type: DateTime, cardinality: 0..1, description: First date and time at which a Resource is scheduled for a Commitment at or above the Minimum Load Point}
+    - {name: SYNC_TIME, type: DateTime, cardinality: 0..1, description: Resource scheduled to synchronize}
+    - {name: ALT_SYNC_TIME, type: DateTime, cardinality: 0..1, description: Alternate synchronization time to Commitment Dispatch}
+    - {name: LAST_UPDATED, type: DateTime, cardinality: 0..1}
+
+enums:
+  DispatchState: [New, Timed Out, Accepted, Rejected]
+  DispatchType:
+    values: [ENG, ORA, ORD, RESV, RGR, RGS, START, EXTEND, DECOM]
+    notes:
+      ORD: not being used
+  LimitType:
+    values: [FIX, MAX, MIN, OTD]
+    meanings:
+      FIX: Resource is manually set
+      MAX: Resource limited to maximum energy output
+      MIN: Resource limited to minimum energy output
+      OTD: Manual, on-demand, one time dispatch
+  ReserveClass:
+    '10S': 10 minute spinning
+    '10N': 10 minute non-spinning
+    '30R': 30 minute reserve
+
+other_event_surfaces:
+  note: >-
+    No other push, streaming, webhook or event surface exists in the IESO estate. The public report
+    repository is poll-only (see the recommended polling table in conventions/ieso-conventions.yml);
+    there is no SSE, WebSocket, message queue or subscription API.
+
+asyncapi_document: none_published
+asyncapi_note: >-
+  A faithful AsyncAPI rendering of this contract is possible but was NOT generated — SPEC-155 is a
+  SOAP RPC design specification, not an event/channel model, and inventing channels, servers and
+  bindings IESO does not publish would be fabrication.

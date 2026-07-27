@@ -1,0 +1,46 @@
+generated: '2026-07-27'
+method: generated
+source: >-
+  Grounded in artifacts harvested verbatim in this repo — wsdl/ieso-mim-web-services.wsdl,
+  xsd/*.xsd, IMO_SPEC_0100, SPEC-155 and the live public report repository listing. IESO publishes no
+  OpenAPI and no skills/AGENTS.md of its own; these are API Evangelist packaged operating
+  instructions built only on operations and URL patterns that were verified to exist.
+note: >-
+  Three skills, one per genuinely distinct IESO interaction model: pull the open data, push into the
+  gated market, and receive the gated push. There is deliberately no skill for the Reports REST API,
+  the Registration/Facilities API or the Retrofit APIs — their operation surfaces are documented only
+  in PDF design specifications with no enumerable operation list, and inventing one would be
+  fabrication.
+skills:
+- name: ieso-public-market-data
+  file: ieso-public-market-data.md
+  api: ieso:ieso-public-reports-repository
+  auth: none
+  summary: >-
+    Retrieve Ontario demand, prices, generation by fuel, intertie flows, outages and adequacy from the
+    anonymous public report repository, with correct Global/Local Link handling, the documented
+    polling cadence and XSD-backed parsing.
+  grounded_in: [IMO_SPEC_0100, 'live listing of https://reports-public.ieso.ca/public/', 'xsd/ieso-document-r1.xsd', 'xsd/ieso-imo-document-r1.xsd']
+- name: ieso-mim-bid-submission
+  file: ieso-mim-bid-submission.md
+  api: ieso:ieso-mim-web-services
+  auth: UserID/password plus source-IP allow-listing
+  gated: true
+  consequence: safety-critical
+  summary: >-
+    Submit, query and cancel bids and offers through the MIM SOAP web services. Covers the 22 real
+    WSDL operations, the two-path BidProcessingStatus result model that must be checked on success as
+    well as on fault, and the absence of any idempotency contract.
+  grounded_in: ['wsdl/ieso-mim-web-services.wsdl', 'xsd/ieso-mim-web-services.xsd', MWT-User-Guide.pdf]
+- name: ieso-dispatch-notification-receiver
+  file: ieso-dispatch-notification-receiver.md
+  api: ieso:ieso-dispatch-notification-service
+  auth: participant-supplied username/password plus IP allow-listing
+  gated: true
+  consequence: safety-critical
+  direction: inbound (IESO calls the participant)
+  summary: >-
+    Host the participant-side service the IESO pushes real-time dispatch instructions to. Full
+    DispatchInstruction field contract, the Confirmed-boolean-or-it-did-not-happen delivery rule, and
+    why SOAP faults are discarded.
+  grounded_in: ['SPEC-155 Issue 4.0 (2025-02-26)', 'asyncapi/ieso-dispatch-notification-webhooks.yml']

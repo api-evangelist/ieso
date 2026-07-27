@@ -1,0 +1,186 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  IMO_SPEC_0100 "Outbound Automated Document, Application Programming Interface" Issue 8.0/9.0
+  (revision March 5, 2025) and "IESO Reports Site - Access Interfaces for Confidential Reports"
+  (IESO_Reports_API_Guide.pdf), both fetched 2026-07-27
+docs: https://www.ieso.ca/sector-participants/technical-interfaces
+note: >-
+  IESO's cross-cutting semantics are file-repository semantics, not REST-resource semantics. The
+  public surface is a naming convention plus a polling contract, and IESO documents both precisely.
+  Where a convention does not exist (idempotency keys, pagination, request-id tracing, an error
+  envelope) that is recorded as absent rather than inferred.
+
+authentication:
+  style: varies by interface
+  summary: >-
+    Anonymous on the public report repository; HTTP Basic plus a mandatory ?idp_id=ieso query
+    parameter on the Reports REST API; Appian API key (Basic username, Appian-API-Key header, or
+    Bearer) on the Online IESO APIs; UserID/password in the form user@participantName plus source-IP
+    allow-listing on the MIM SOAP services.
+  see: authentication/ieso-authentication.yml
+
+document_naming:
+  standard: External Document Naming Convention - Information Technology Standard (IESO_ISTD_0001)
+  elements: 5
+  separator: underscore
+  pattern: <Document Security>_<Document Identifier>_<Document Date/Time>_<Document Version>.<File Type>
+  example: PUB_Adequacy_20081107_v28.xml
+  security_prefix:
+    PUB: public report, served anonymously from reports-public.ieso.ca
+    other: confidential reports are published under the participant's own private directory
+  companion_files: >-
+    Every automated document is comprised of three or more files. The XML file carries the data and
+    may be public or confidential; the XSD file describes the schema and is always public and
+    required; the PDF help file is always public and required. Zero, one or many XSL stylesheets are
+    optional, one per rendering (HTML, CSV, PDF, XLS).
+
+url_conventions:
+  public_repository_root: https://reports-public.ieso.ca/public/
+  public_report_directory: https://reports-public.ieso.ca/public/<Document Identifier>/
+  public_sandbox_root: https://reports-public-sandbox.ieso.ca/public/
+  confidential_repository_root: https://reports.ieso.ca/private/<MP Short Name>/
+  rule: >-
+    Each report has its own file directory named identically to the document identifier of the report;
+    the report files reside within that subdirectory. Directory names are stable — 139 directories were
+    enumerated on 2026-07-27.
+
+latest_version_links:
+  global_link:
+    definition: >-
+      A symbolic link to the latest version of a document issued for the most recent reporting period
+      (the last occurrence of the document).
+    name_pattern: <Document Security>_<Document Identifier>.<File Type>
+    example: PUB_Demand.csv
+    use: The stable "always current" URL — fetch this rather than computing a filename.
+  local_link:
+    definition: >-
+      A symbolic link to the latest version of a document within one reporting period. Exists for every
+      unique reporting period.
+    name_pattern: <Document Security>_<Document Identifier>_<Document Date/Time>.<File Type>
+    example: PUB_Adequacy_20081107.xml
+
+versioning:
+  scheme: monotonic integer suffix _v<n> on the filename
+  caveat: >-
+    Verbatim from IMO_SPEC_0100 paragraph 40 — "Version numbers must not be relied upon as
+    representing anything other than the next version for a specific report (e.g. v23 for a report
+    produced each hour would normally represent hour 23 but because of a problem with issuing a
+    previous report (i.e. a report is missed), v23 is for hour 24)." Never map version number to
+    hour-of-day.
+  report_classes:
+  - appending-multi-version
+  - non-appending-multi-version
+  - single-version
+  - report-of-record multi-version
+  api_versioning:
+    reports_rest_api: URI path, current v1.4 (https://reports.ieso.ca/api/v1.4)
+    mim_soap: WSDL-versioned, target namespace http://webservices.ieso.ca/emim/
+    online_ieso: resource-prefixed, e.g. reg-v1-facilities
+
+polling:
+  contract: IMO_SPEC_0100 Table 5-2, Recommended Polling Frequency
+  recommendations:
+  - {reporting_period: 5 minutes, poll_every: 15 to 30 seconds}
+  - {reporting_period: hourly, poll_every: 4 to 10 minutes}
+  - {reporting_period: daily, poll_every: 30 to 60 minutes}
+  optimization: >-
+    Paragraph 41 — parent report folders are listed together and carry a last-modified date/time; scan
+    that list to decide whether to traverse a folder at all. Paragraph 42 warns the parent folder
+    last-modified changes on add, move AND remove, so a change is not proof of new data.
+  heavy_user_courtesy: >-
+    Paragraph 37 — "It is strongly recommended that heavy users of the IESO Report Site provide their
+    IP addresses to customer.relations@ieso.ca."
+
+retention:
+  model: per-report Report Retention Period
+  purging: >-
+    Report Purging removes reports once the retention period is exceeded, measured from the document
+    date against the current date; report version is ignored. Associated Global and Local Links are
+    removed with the report. Purging processes normally run once per day.
+
+rest_api_conventions:
+  applies_to: ieso:ieso-reports-site-rest-api
+  product: Axway SecureTransport
+  base: https://reports.ieso.ca/api/v1.4
+  methods: [GET, PUT, POST, DELETE]
+  required_query_parameter: idp_id=ieso
+  content_negotiation: Accepts and returns both JSON and XML.
+  resources:
+  - path: /files
+    purpose: list all directories and files in the account root folder
+  - path: '/files/{path}'
+    purpose: list a subfolder, or download a file
+  - path: '/files/{path}?status'
+    purpose: return file properties rather than content
+  listing_shape:
+    envelope: '{"files": [ ... ]}'
+    fields: [fileName, lastModifiedTime, size, isDirectory, isRegularFile, isSymbolicLink, isOther, group, owner, permissions]
+  properties_shape:
+    fields: [fileName, size, creationTime, lastModifiedTime, lastAccessTime, fileKey, isDirectory, isRegularFile, isSymbolicLink, isOther, group, owner, permissions]
+  timestamps: epoch-time-milliseconds
+  parameters_note: >-
+    Additional options (limit, sortBy, order) come from the Axway SecureTransport API documentation
+    that IESO links from the guide; IESO publishes a modified copy that lists only the functions
+    exposed to market participants.
+  alternate_interface: SFTP on reports.ieso.ca port 22 using the same machine account credentials.
+
+soap_conventions:
+  applies_to: ieso:ieso-mim-web-services
+  style: document/literal SOAP over HTTP
+  service: emim-web-service
+  target_namespace: http://webservices.ieso.ca/emim/
+  operation_naming: <Domain><Action>Operation, e.g. RealtimeEnergyBidUploadOperation
+  action_verbs: [Upload, Query, Cancel]
+  health_check: HealthCheckOperation
+  impersonation: ActAsMarketParticipantOperation
+  faults: [QueryFault, SubmissionFullyRejectedFault, SubmissionPartiallyRejectedFault]
+  see: errors/ieso-error-codes.yml
+
+idempotency:
+  supported: false
+  note: >-
+    No idempotency key, request-deduplication header or replay-safety contract is documented on any
+    IESO interface. Report retrieval is naturally idempotent because it is HTTP GET on immutable
+    versioned files, but that is HTTP semantics, not an IESO contract. MIM bid submission has no
+    idempotency key — resubmission is controlled by the Cancel operations and by the submission
+    fault model instead.
+
+pagination:
+  supported: partial
+  note: >-
+    The public repository has none — a directory index returns every file. The SecureTransport REST
+    API exposes limit / sortBy / order parameters on directory listings via the Axway API surface
+    IESO links to, but IESO's own guide does not document paging or a cursor.
+
+filtering:
+  supported: false
+  note: >-
+    No query parameters, filtering, field selection or content negotiation on the public repository.
+    Selection is by constructing the file path from the naming convention.
+
+request_tracing:
+  request_id_header: none documented
+
+error_envelope:
+  standard: none
+  note: >-
+    No RFC 9457 problem+json, no documented JSON error envelope on the REST API. Errors surface as
+    bare HTTP status codes (401 verified anonymously) and, on the SOAP surface, as the three declared
+    WSDL faults.
+  see: errors/ieso-error-codes.yml
+
+rate_limits:
+  published: false
+  signalling: none
+  note: >-
+    No rate-limit headers, quotas or throttling policy are published. The polling frequency table and
+    the request to register heavy-user IP addresses are the only load guidance IESO gives.
+  see: conventions/ieso-conventions.yml#polling
+
+cross_links:
+  authentication: authentication/ieso-authentication.yml
+  errors: errors/ieso-error-codes.yml
+  lifecycle: lifecycle/ieso-lifecycle.yml
+  sandbox: sandbox/ieso-sandbox.yml
+  data_model: data-model/ieso-data-model.yml

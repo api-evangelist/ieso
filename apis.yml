@@ -19,7 +19,7 @@ description: >-
   Ontario market participants with IESO-issued machine accounts. IESO publishes no consumer energy-data
   API: Ontario's Green Button mandate (O. Reg. 633/21) binds licensed electricity and gas distributors,
   not the system operator, so there is no retail usage or billing surface here at all.
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+image: https://www.ieso.ca/-/media/Images/IESO/Logo/ieso-logo-lrg.png
 tags:
 - Energy
 - Canada
@@ -93,6 +93,10 @@ apis:
     url: xsd/ieso-dacp-check-source-ade-r1.xsd
   - type: XSD
     url: xsd/ieso-financial-binding-status-r1.xsd
+  - type: Sandbox
+    url: https://reports-public-sandbox.ieso.ca/public/
+  - type: DataModel
+    url: data-model/ieso-data-model.yml
 - aid: ieso:ieso-reports-site-rest-api
   name: IESO Reports Site REST API
   description: >-
@@ -155,6 +159,10 @@ apis:
     url: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/mp-submissions/MIM-sample-request-response.zip
   - type: SDK
     url: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/mp-submissions/MIM%20Web%20Services%20Toolkit%20-%20MWT.zip
+  - type: Sandbox
+    url: https://webservices-sandbox.ieso.ca/emim
+  - type: AgentSkill
+    url: skills/ieso-mim-bid-submission.md
 - aid: ieso:ieso-registration-facilities-api
   name: IESO Registration System Facilities API
   description: >-
@@ -206,8 +214,14 @@ apis:
     A companion web service API documented in SPEC-232 for service providers participating in the Save
     on Energy Retrofit program, covering the service-provider side of project submission and management
     on the Online IESO platform. Participant-only; requires an IESO-issued API account. No public
-    endpoint or self-serve credential issuance is published.
+    self-serve credential issuance is published. SPEC-232 documents the Appian root endpoint
+    https://online.ieso.ca/suite/webapi/ with eight rft-sp-v1-* resource suffixes (applications,
+    appdetails, appdoc, appcomments, facilities, facdetails, facdoc, persons), GET/PUT/POST/DELETE
+    methods, API-key authentication in three forms, and the only published HTTP status code table in
+    the IESO estate (200, 201, 400, 401, 403, 404, 408, 429). The sandbox and production root endpoint
+    values are themselves redacted to "URL value" in the public PDF.
   humanURL: https://www.ieso.ca/sector-participants/technical-interfaces
+  baseURL: https://online.ieso.ca/suite/webapi
   tags:
   - Energy Efficiency
   - Service Providers
@@ -253,6 +267,10 @@ apis:
     url: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/dispatch-service-system/SPEC-155-Dispatch-Notification-Service-Web-Service-Design-Specifications.pdf
   - type: Documentation
     url: https://www.ieso.ca/sector-participants/technical-interfaces
+  - type: Webhooks
+    url: asyncapi/ieso-dispatch-notification-webhooks.yml
+  - type: AgentSkill
+    url: skills/ieso-dispatch-notification-receiver.md
 - aid: ieso:ieso-ocss-web-service
   name: IESO Outage Coordination and Scheduling System (OCSS) Web Service
   description: >-
@@ -275,18 +293,72 @@ apis:
 common:
 - type: Website
   url: https://www.ieso.ca/
+- type: DeveloperPortal
+  url: https://www.ieso.ca/sector-participants/technical-interfaces
 - type: Documentation
   url: https://www.ieso.ca/sector-participants/technical-interfaces
 - type: Documentation
   url: https://www.ieso.ca/en/Power-Data/Data-Directory
+- type: APIReference
+  url: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/xml-automated-docs/IMO_SPEC_0100.pdf
+- type: Support
+  url: https://www.ieso.ca/Corporate-IESO/Contact
+- type: SignUp
+  url: https://www.ieso.ca/Sector-Participants/Connection-Process/Overview
+- type: Login
+  url: https://online.ieso.ca/
+- type: Roadmap
+  url: https://www.ieso.ca/sector-participants/change-management/it-release-schedule
+- type: Deprecation
+  url: https://www.ieso.ca/sector-participants/change-management/it-release-schedule
 - type: TermsOfService
   url: https://www.ieso.ca/Terms-of-Use
+- type: PrivacyPolicy
+  url: https://www.ieso.ca/privacy
+- type: Security
+  url: https://www.ieso.ca/Sector-Participants/Cyber-Security/Cyber-Security-Incident-Reporting
 - type: Blog
   url: https://www.ieso.ca/en/Corporate-IESO/Blog
 - type: LinkedIn
   url: https://www.linkedin.com/company/ieso
 - type: Email
   url: mailto:customer.relations@ieso.ca
+- type: Authentication
+  url: authentication/ieso-authentication.yml
+- type: OAuthScopes
+  url: scopes/ieso-scopes.yml
+- type: Conventions
+  url: conventions/ieso-conventions.yml
+- type: ErrorCatalog
+  url: errors/ieso-error-codes.yml
+- type: DataModel
+  url: data-model/ieso-data-model.yml
+- type: Lifecycle
+  url: lifecycle/ieso-lifecycle.yml
+- type: ChangeLog
+  url: changelog/ieso-changelog.yml
+- type: Sandbox
+  url: sandbox/ieso-sandbox.yml
+- type: Conformance
+  url: conformance/ieso-conformance.yml
+- type: Packages
+  url: packages/ieso-packages.yml
+- type: SDKs
+  url: packages/ieso-packages.yml
+- type: Webhooks
+  url: asyncapi/ieso-dispatch-notification-webhooks.yml
+- type: WellKnown
+  url: well-known/ieso-well-known.yml
+- type: MCPServer
+  url: mcp/ieso-mcp.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/ieso-llms.txt
+- type: DomainSecurity
+  url: security/ieso-domain-security.yml
+- type: VulnerabilityDisclosure
+  url: security/ieso-vulnerability-disclosure.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

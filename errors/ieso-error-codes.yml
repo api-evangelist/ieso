@@ -1,0 +1,166 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  wsdl/ieso-mim-web-services.wsdl and xsd/ieso-mim-web-services.xsd (fault bindings and fault message
+  schemas), plus live anonymous HTTP probes of every IESO API host on 2026-07-27
+docs: https://www.ieso.ca/sector-participants/technical-interfaces
+format: soap-fault + bare-http-status
+note: >-
+  IESO publishes no RFC 9457 problem+json contract and no numbered error-code registry. Two real error
+  models exist and both are captured here: the three SOAP faults declared in the MIM WSDL, whose
+  payload schema is fully specified in the accompanying XSD, and the bare HTTP status codes returned
+  by the REST surfaces, confirmed by anonymous probe. Nothing below is inferred — the fault names,
+  their operation bindings and their payload fields are read out of the harvested WSDL/XSD, and every
+  HTTP status is a recorded probe result.
+
+soap_faults:
+  transport: SOAP 1.1 fault over HTTP
+  service: emim-web-service
+  applies_to: ieso:ieso-mim-web-services
+  faults:
+  - name: QueryFault
+    message: 'tns:QueryFault'
+    payload_element: 'emimd:QueryFault'
+    payload_type: 'xs:string'
+    meaning: >-
+      The query could not be satisfied. Returned as a plain string; the WSDL/XSD do not decompose it
+      into a code and description.
+    bound_operations:
+    - MarketStatusOperation
+    - MarketMessageOperation
+    - ResourceOperation
+    - ForebayOperation
+    - BilateralBidQueryOperation
+    - DailyDispatchBidQueryOperation
+    - ForebayBidQueryOperation
+    - OperatingReserveBidQueryOperation
+    - RealtimeEnergyBidQueryOperation
+    - ScheduleBidQueryOperation
+    - ActAsMarketParticipantOperation
+  - name: SubmissionFullyRejectedFault
+    message: 'tns:SubmissionFullyRejectedFault'
+    payload_element: 'emimd:BidProcessingStatus'
+    payload_type: BidProcessingStatusType
+    meaning: >-
+      The whole submission was rejected. No part of the bid, offer or cancellation was accepted; the
+      participant must correct and resubmit.
+    bound_operations:
+    - RealtimeEnergyBidUploadOperation
+    - RealtimeEnergyBidCancelOperation
+    - OperatingReserveBidUploadOperation
+    - OperatingReserveBidCancelOperation
+    - ScheduleBidUploadOperation
+    - ScheduleBidCancelOperation
+    - BilateralBidUploadOperation
+    - BilateralBidCancelOperation
+    - DailyDispatchBidUploadOperation
+    - ForebayBidUploadOperation
+  - name: SubmissionPartiallyRejectedFault
+    message: 'tns:SubmissionPartiallyRejectedFault'
+    payload_element: 'emimd:BidProcessingStatus'
+    payload_type: BidProcessingStatusType
+    meaning: >-
+      Part of the submission was accepted and part rejected. The per-hour Message entries identify
+      which hours failed; the accepted portion stands.
+    bound_operations:
+    - RealtimeEnergyBidUploadOperation
+    - RealtimeEnergyBidCancelOperation
+    - OperatingReserveBidUploadOperation
+    - OperatingReserveBidCancelOperation
+    - ScheduleBidUploadOperation
+    - ScheduleBidCancelOperation
+    - BilateralBidUploadOperation
+    - BilateralBidCancelOperation
+    - DailyDispatchBidUploadOperation
+    - ForebayBidUploadOperation
+
+fault_payload_schema:
+  name: BidProcessingStatusType
+  source: xsd/ieso-mim-web-services.xsd
+  fields:
+  - {name: SubmissionTime, type: 'xs:dateTime', required: true}
+  - {name: TransactionId, type: TransactionIdType, required: true, note: string, minimum length 6}
+  - {name: Message, type: MessageType, required: true, cardinality: 1..unbounded}
+  message_type:
+    name: MessageType
+    fields:
+    - {name: Severity, type: SeverityType, required: true}
+    - {name: Code, type: 'xs:string', required: true, note: 'IESO-assigned message code; the code list itself is not published in the XSD.'}
+    - {name: Description, type: 'xs:string', required: true}
+    - {name: Hour, type: HourType, required: false, note: 'Present when the message applies to a specific delivery hour.'}
+  severity_enum: [INFO, WARN, ERROR]
+  handling: >-
+    A fault is not the only channel for messages — a successful submission also returns a
+    BidProcessingStatus, so clients must inspect Message[].Severity on the success path too. A
+    submission that returns only INFO/WARN messages was accepted.
+
+http_statuses:
+  method: probed
+  date: '2026-07-27'
+  note: >-
+    No JSON or XML error envelope is documented for any REST surface. The Axway SecureTransport API
+    returns bare HTTP status codes; the guide documents only the success shapes.
+  observed:
+  - status: 200
+    surface: https://reports-public.ieso.ca/public/
+    meaning: Public report directory index or data file returned anonymously.
+  - status: 401
+    surface: https://reports.ieso.ca/api/v1.4/files?idp_id=ieso
+    meaning: >-
+      Missing or invalid HTTP Basic credentials on the confidential Reports REST API. Remediation —
+      supply an IESO-issued machine account and keep the ?idp_id=ieso query parameter on the request.
+  - status: 401
+    surface: https://reports-sandbox.ieso.ca/api/v1.4/files?idp_id=ieso
+    meaning: Same, on the sandbox twin.
+  - status: 401
+    surface: https://online.ieso.ca/suite/webapi/
+    documented: true
+    meaning: >-
+      SPEC-249 — a missing or invalid Authorization header returns 401. Remediation: supply the Appian
+      API key as Basic username, an Appian-API-Key header, or a Bearer token, over HTTPS.
+  - status: 404
+    surface: https://reports-public.ieso.ca/api/v1.4/files?idp_id=ieso
+    meaning: >-
+      The REST API does not exist on the public host. The open repository is plain HTTPS file
+      retrieval only; there is no API in front of it.
+  - status: '000'
+    surface: https://webservices.ieso.ca/emim
+    meaning: >-
+      No TCP connection from the open internet. Not an error response — the MIM endpoint is
+      restricted at the network layer to allow-listed participant IP addresses.
+
+documented_status_codes:
+  method: searched
+  source: >-
+    SPEC-232 "Retrofit Service Provider API" section 2.5, Table 2-3 API Status Codes —
+    https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/retrofit-system/RetrofitServiceProviderAPI-SPEC-232.pdf
+  applies_to:
+  - ieso:ieso-retrofit-service-provider-api
+  - ieso:ieso-retrofit-api
+  - ieso:ieso-registration-facilities-api
+  note: >-
+    The only place in the IESO estate where a status-code table is actually published. It covers the
+    Appian-hosted Online IESO REST APIs. Verbatim from Table 2-3.
+  codes:
+  - {status: 200, text: OK, description: Standard response for successful API requests}
+  - {status: 201, text: Created, description: The resource was successfully created}
+  - {status: 400, text: Bad Request, description: Invalid request due to bad syntax or validation failed.}
+  - {status: 401, text: Unauthorized, description: Authentication has failed or was not provided}
+  - {status: 403, text: Forbidden, description: 'The request has insufficient permissions to perform the action or read the resource, or the action is unsupported in general'}
+  - {status: 404, text: Not Found, description: The requested resource cannot be found}
+  - {status: 408, text: Request Timeout, description: The server did not receive a complete request message within the time that was prepared to wait.}
+  - {status: 429, text: Too Many Requests, description: Too many requests have been made in a given amount of time}
+  rate_limit_note: >-
+    429 is documented but no quota, window, Retry-After or X-RateLimit header is specified anywhere.
+    The existence of the code is the only rate-limit signal IESO publishes.
+  methods_supported: [GET, PUT, POST, DELETE]
+
+soft_404_warning: >-
+  www.ieso.ca (Sitecore) answers unknown paths with HTTP 200 and an "Error-404" titled HTML page, and
+  reports.ieso.ca (SecureTransport) answers unknown paths with HTTP 200 and the SAML login page.
+  Clients must not treat a 200 from those hosts as proof the resource exists — check the body.
+
+gaps:
+- No published error-code registry mapping the MessageType Code values to meanings and remediation.
+- No RFC 9457 problem+json on any surface.
+- No retry-after or rate-limit error signalling.

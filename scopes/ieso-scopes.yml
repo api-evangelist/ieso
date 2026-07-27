@@ -1,0 +1,69 @@
+generated: '2026-07-27'
+method: searched
+source: https://gateway.ieso.ca/.well-known/openid-configuration
+docs: https://www.ieso.ca/sector-participants/technical-interfaces
+note: >-
+  IESO publishes no OpenAPI and no API authorization scope reference. The only scope surface in the
+  estate that can be read anonymously is the Okta identity provider at gateway.ieso.ca, whose OIDC
+  discovery document advertises the stock OpenID Connect scope set for interactive participant login.
+  These are identity scopes, not API permission scopes — none of IESO's documented APIs (Reports REST,
+  MIM SOAP, Online IESO Appian) use OAuth 2.0 bearer tokens issued against these scopes; they use HTTP
+  Basic, Appian API keys, and UserID/password with IP allow-listing respectively. Recorded here
+  because it is the real, verified scope surface; nothing has been inferred or invented.
+schemes:
+- name: ieso-gateway
+  type: openIdConnect
+  issuer: https://gateway.ieso.ca
+  source: well-known/ieso-openid-configuration.json
+  applies_to: interactive participant login (reports.ieso.ca, online.ieso.ca)
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://gateway.ieso.ca/oauth2/v1/authorize
+    tokenUrl: https://gateway.ieso.ca/oauth2/v1/token
+  - flow: implicit
+    authorizationUrl: https://gateway.ieso.ca/oauth2/v1/authorize
+  - flow: password
+    tokenUrl: https://gateway.ieso.ca/oauth2/v1/token
+  - flow: deviceCode
+    deviceAuthorizationUrl: https://gateway.ieso.ca/oauth2/v1/device/authorize
+    tokenUrl: https://gateway.ieso.ca/oauth2/v1/token
+  - flow: refreshToken
+    tokenUrl: https://gateway.ieso.ca/oauth2/v1/token
+scopes:
+- scope: openid
+  description: Required OpenID Connect scope; requests an ID token for the authenticated participant user.
+  kind: identity
+  sources: [well-known/ieso-openid-configuration.json]
+- scope: profile
+  description: Standard OIDC profile claims (name, preferred_username, locale, updated_at).
+  kind: identity
+  sources: [well-known/ieso-openid-configuration.json]
+- scope: email
+  description: Standard OIDC email and email_verified claims.
+  kind: identity
+  sources: [well-known/ieso-openid-configuration.json]
+- scope: address
+  description: Standard OIDC postal address claim.
+  kind: identity
+  sources: [well-known/ieso-openid-configuration.json]
+- scope: phone
+  description: Standard OIDC phone_number and phone_number_verified claims.
+  kind: identity
+  sources: [well-known/ieso-openid-configuration.json]
+- scope: offline_access
+  description: Requests a refresh token so the session can be renewed without re-authentication.
+  kind: session
+  sources: [well-known/ieso-openid-configuration.json]
+- scope: groups
+  description: >-
+    Okta group membership claim. In an IESO deployment this is the closest thing to an authorization
+    signal, since participant entitlements are administered as group/role membership by the
+    organization's Rights Administrator rather than as API scopes.
+  kind: authorization
+  sources: [well-known/ieso-openid-configuration.json]
+api_permission_scopes: none_published
+gaps:
+- >-
+  No per-API scope catalogue exists. Entitlements to the Reports API, MIM web services and the Online
+  IESO APIs are granted as machine-account permissions by IESO staff and the participant's Rights
+  Administrator, not as OAuth scopes a client can request.

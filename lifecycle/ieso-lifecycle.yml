@@ -1,0 +1,93 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  https://www.ieso.ca/sector-participants/change-management/it-release-schedule and
+  https://www.ieso.ca/Sector-Participants/Change-Management/Pending-Changes-Documents, fetched
+  2026-07-27; IMO_SPEC_0100 revision history
+note: >-
+  IESO runs a formal, published IT release train with named categories, fixed calendar dates and a
+  mandatory comment window. That release train IS IESO's deprecation and change-notice policy for
+  technical interfaces — a Category 3 release is defined as one that requires market participants to
+  change their own technical interfaces, and it is announced roughly six months ahead of production
+  build. There is no RFC 8594 Sunset/Deprecation header support anywhere in the estate and no public
+  status page.
+
+versioning:
+  scheme: mixed
+  reports_rest_api: {style: uri-path, current: v1.4, base: https://reports.ieso.ca/api/v1.4}
+  mim_soap: {style: wsdl-namespace, current: 'http://webservices.ieso.ca/emim/', service: emim-web-service}
+  online_ieso: {style: resource-prefix, current: reg-v1-facilities, base: https://online.ieso.ca/suite/webapi/}
+  reports: {style: filename version suffix, pattern: _v<n>, caveat: see conventions/ieso-conventions.yml#versioning}
+  specifications: {style: issue number + revision date, example: 'IMO_SPEC_0100 Issue 8.0/9.0, March 5, 2025'}
+  docs: https://www.ieso.ca/sector-participants/technical-interfaces
+
+deprecation:
+  policy_url: https://www.ieso.ca/sector-participants/change-management/it-release-schedule
+  policy_kind: change-management release train (not a sunset-header deprecation policy)
+  sunset_header: false
+  deprecation_header: false
+  summary: >-
+    Changes to IESO technical interfaces are only made through the scheduled IT release train. Each
+    release moves through Preliminary Plan, Feedback Period, Target Plan, Final Plan, Sandbox
+    Implementation and Production Build, with published dates at every stage. Category 3 releases —
+    twice yearly — are the ones that "require market participants to make changes to their own
+    technical interfaces". Category 2 releases — four times yearly — "require market participants to
+    make a change in procedure or to update documentation".
+  notice_period: >-
+    Approximately 6.5 months from Preliminary Plan to Production Build, with the Sandbox
+    implementation landing roughly 6 weeks before production (e.g. R56.0: Preliminary 27 May 2026,
+    Final 22 Jul 2026, Sandbox 30 Jul 2026, Production 9 Sep 2026).
+  feedback_contact: pending.changes@ieso.ca
+  pending_changes:
+    documents: https://www.ieso.ca/Sector-Participants/Change-Management/Pending-Changes-Documents
+    reports: https://www.ieso.ca/Sector-Participants/Change-Management/Pending-Changes-Reports
+  supersessions:
+  - spec: SPEC467 Retrofit LDC API
+    supersedes: SPEC-188 Retrofit API
+    target_baseline: '56.0'
+    target_date: '2026-09-09'
+    comments_due: '2026-08-07'
+    note: >-
+      "New LDC API in Retrofit based on eDSM contracts for marketing and outreach". This is the one
+      live API specification replacement in the current pending-changes package. Recorded because it
+      affects ieso:ieso-retrofit-api.
+  report_purging:
+    described_in: IMO_SPEC_0100 section 2.4
+    summary: >-
+      Reports are removed once the per-report Report Retention Period is exceeded, measured from the
+      document date. Global and Local Links are removed with the report. Purging runs roughly daily.
+      This is the data-side retirement policy for the public repository.
+
+sla:
+  published: false
+  note: >-
+    No API service-level agreement, uptime target or availability commitment is published for any
+    IESO interface. Availability obligations for the market systems themselves live in the Market
+    Rules and market manuals, not in an API SLA.
+
+status_page:
+  published: false
+  probes:
+  - {url: 'https://status.ieso.ca/', result: not found}
+  - {url: 'https://www.ieso.ca/', result: no status/system-availability page located}
+  note: >-
+    No public API or application status page was located. Participant-facing outage and availability
+    communication happens through IESO Market Notices and Customer Relations
+    (customer.relations@ieso.ca, 1.888.448.7777), not a status dashboard. Deliberately not wired as a
+    StatusPage pointer.
+
+support:
+  customer_relations_email: customer.relations@ieso.ca
+  customer_relations_phone: 1.888.448.7777
+  contact_page: https://www.ieso.ca/Corporate-IESO/Contact
+  supported_client_platforms: https://www.ieso.ca/en/Sector-Participants/Supported-Client-Platforms
+
+deprecated_operations: []
+deprecated_operations_note: >-
+  No operation in wsdl/ieso-mim-web-services.wsdl carries a deprecation marker, and IESO publishes no
+  OpenAPI from which deprecated flags could be derived.
+
+cross_links:
+  changelog: changelog/ieso-changelog.yml
+  sandbox: sandbox/ieso-sandbox.yml
+  conventions: conventions/ieso-conventions.yml

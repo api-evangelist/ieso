@@ -1,0 +1,85 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  IMO_SPEC_0100 paragraphs 18/22/46, IESO_Reports_API_Guide.pdf, MWT-User-Guide.pdf, SPEC-249, the
+  IESO IT Release Schedule and the Market Participant Testing pages; every host probed 2026-07-27
+docs: https://www.ieso.ca/sector-participants/technical-interfaces
+note: >-
+  IESO operates a full parallel sandbox estate — every production interface has a named sandbox twin,
+  and the sandbox is a scheduled stage of the release train, going live roughly six weeks before each
+  production build. There are no magic test values, test cards or fixture generators: the sandbox is a
+  mirrored environment with its own credentials, not a simulator. The public report sandbox is the one
+  piece of it anyone can use anonymously.
+model: mirrored-environment
+test_values_published: false
+test_credential_self_serve: false
+credential_note: >-
+  Verbatim from the reports-sandbox landing page — the system "is owned and operated by the IESO,
+  governed by the Market Rules, and registered Participants receive a unique and confidential User
+  Account and Password to access this system." Sandbox credentials are distinct from production
+  credentials; IESO warns participants to ensure "the credentials being used to connect to the IESO
+  MRP systems are specific to the IESO Sandbox environment to minimize connection issues."
+environments:
+- name: public reports sandbox
+  covers: ieso:ieso-public-reports-repository
+  url: https://reports-public-sandbox.ieso.ca/public/
+  production_twin: https://reports-public.ieso.ca/public/
+  auth: none
+  probe: {status: 200, date: '2026-07-27', note: 'Directory index served anonymously, same shape as production.'}
+  source: IMO_SPEC_0100 paragraph 18
+- name: confidential reports sandbox
+  covers: ieso:ieso-reports-site-rest-api
+  url: https://reports-sandbox.ieso.ca/
+  api_endpoint: https://reports-sandbox.ieso.ca/api/v1.4/files?idp_id=ieso
+  production_twin: https://reports.ieso.ca/api/v1.4/files?idp_id=ieso
+  auth: HTTP Basic with a sandbox machine account
+  probe: {status: 401, date: '2026-07-27'}
+  source: IMO_SPEC_0100 paragraphs 22 and 46
+  example_request: >-
+    curl -k -u username:password https://reports-sandbox.ieso.ca/api/v1.4/files?idp_id=ieso
+- name: MIM web services sandbox
+  covers: ieso:ieso-mim-web-services
+  url: https://webservices-sandbox.ieso.ca/emim
+  production_twin: https://webservices.ieso.ca/emim
+  auth: UserID/password in the form user@participantName, plus source-IP allow-listing
+  toolkit_property: ws.client.end.point = https://webservices-sandbox.ieso.ca/emim
+  probe: {status: '000', date: '2026-07-27', note: 'No connection from the open internet — consistent with IP allow-listing.'}
+  source: MWT-User-Guide.pdf
+- name: MIM web services sandbox (Market Renewal)
+  covers: ieso:ieso-mim-web-services
+  url: https://webservices-sandboxmrp.ieso.ca/emim
+  auth: UserID/password plus source-IP allow-listing
+  probe: {status: '000', date: '2026-07-27'}
+  source: >-
+    IESO Market Participant Testing guidance — "Market Participants using WSDL and sample files for
+    Market Trials should ensure that the endpoint is https://webservices-sandboxmrp.ieso.ca/emim."
+  note: Market Renewal Program trials endpoint, distinct from the standing MIM sandbox.
+- name: Online IESO sandbox
+  covers:
+  - ieso:ieso-registration-facilities-api
+  - ieso:ieso-retrofit-api
+  - ieso:ieso-retrofit-service-provider-api
+  url: https://onlinesandbox.ieso.ca/suite/webapi/
+  production_twin: https://online.ieso.ca/suite/webapi/
+  auth: Appian API key (Basic username, Appian-API-Key header, or Bearer)
+  probe: {status: 200, date: '2026-07-27', note: 'Appian shell resolves; API calls require a key.'}
+  source: FacilityAPISpecification-SPEC-249.pdf
+release_alignment:
+  description: >-
+    Sandbox implementation is a dated stage of every IESO release, landing before the production
+    build so participants can test interface changes against the new baseline.
+  upcoming:
+  - {baseline: R56.0, sandbox: '2026-07-30', production: '2026-09-09'}
+  - {baseline: R56.1, sandbox: '2026-10-22', production: '2026-12-02'}
+  source: https://www.ieso.ca/sector-participants/change-management/it-release-schedule
+market_trials:
+  docs: https://ieso.ca/en/Market-Renewal/Market-Participant-Readiness/Market-Participant-Testing
+  scope: >-
+    During Market Trials, participants test the sandbox Energy Market Interface (EMI), Market
+    Information Management (MIM) system and IESO Reports — the full cycle from day-ahead bid and
+    offer submission through real-time dispatch instruction receipt and report/settlement download.
+  sample_payloads: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/mp-submissions/MIM-sample-request-response.zip
+gaps:
+- No test card, test IBAN, magic identifier or fixture-trigger surface — not applicable to this domain.
+- No time simulation or test-clock facility is published.
+- Sandbox access for every gated interface still requires an IESO-issued account.

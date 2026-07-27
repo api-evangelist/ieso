@@ -1,0 +1,69 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  npm, PyPI, RubyGems, CRAN and the IESO technical interfaces page, probed 2026-07-27
+note: >-
+  IESO ships exactly one first-party client artifact — the MIM Web Services Toolkit (MWT), a
+  downloadable Java toolkit distributed as a ZIP from ieso.ca, not from any public package registry.
+  There is no IESO organization on npm, PyPI, Maven Central, NuGet, pkg.go.dev, RubyGems, Packagist or
+  crates.io, and no IESO GitHub organization (github.com/ieso is Ieso Digital Health, an unrelated UK
+  mental-health company — see review.yml homonymTrap). The community has filled the gap with two
+  well-known Python grid-data libraries that both ship a dedicated IESO connector against the public
+  report repository.
+registry_probes:
+- {registry: pypi, name: ieso, status: 404}
+- {registry: pypi, name: ieso-api, status: 404}
+- {registry: pypi, name: ontario-ieso, status: 404}
+- {registry: npm, name: ieso, status: 404}
+- {registry: npm, name: ieso-api, status: 404}
+- {registry: npm, name: node-ieso, status: 404}
+packages:
+- language: java
+  registry: vendor
+  name: MIM Web Services Toolkit (MWT)
+  url: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/mp-submissions/MIM%20Web%20Services%20Toolkit%20-%20MWT.zip
+  docs: https://www.ieso.ca/-/media/Files/IESO/technical-interfaces/mp-submissions/MWT-User-Guide.pdf
+  install: Download the ZIP from ieso.ca and configure ws.client.end.point in the toolkit properties file.
+  official: true
+  covers: ieso:ieso-mim-web-services
+  description: >-
+    IESO's own client toolkit for the Market Information Management SOAP web services. The user guide
+    documents the configuration property ws.client.end.point (sandbox value
+    https://webservices-sandbox.ieso.ca/emim) and the username format user@participantName. Not
+    published to Maven Central or any other public registry — it is a direct ZIP download from
+    ieso.ca and is usable only by participants holding IESO credentials and an allow-listed IP.
+- language: python
+  registry: pypi
+  name: gridstatus
+  version_seen: 0.36.0
+  url: https://pypi.org/project/gridstatus/
+  repo: https://github.com/gridstatus/gridstatus
+  install: pip install gridstatus
+  official: false
+  covers: ieso:ieso-public-reports-repository
+  description: >-
+    Actively maintained third-party Python client for ISO/RTO grid data. Ships a dedicated IESO
+    connector (gridstatus/ieso.py plus gridstatus/ieso_constants.py) and documented IESO load-data
+    examples, reading the anonymous public report repository at reports-public.ieso.ca.
+  evidence: >-
+    GitHub code search on repo gridstatus/gridstatus for "IESO" on 2026-07-27 returned 20 files
+    including gridstatus/ieso.py, gridstatus/ieso_constants.py and docs/Examples/ieso/.
+- language: python
+  registry: pypi
+  name: pyiso
+  version_seen: 0.4.0
+  url: https://pypi.org/project/pyiso/
+  repo: https://github.com/WattTime/pyiso
+  install: pip install pyiso
+  official: false
+  status: dormant
+  covers: ieso:ieso-public-reports-repository
+  description: >-
+    WattTime's Python client library for ISO and other power-grid data sources, with a pyiso/ieso.py
+    module that stitches together the public XML/CSV reports at reports-public.ieso.ca to implement
+    load, fuel-mix and trade parsers. Last pushed 2024-02-02; treat as dormant but historically the
+    reference community integration.
+gaps:
+- No first-party SDK for the Reports REST API, the Registration/Facilities API or the Retrofit APIs.
+- No package-manager distribution of any IESO client; the only official artifact is a ZIP download.
+- No IESO GitHub organization, so no source-available reference client.
