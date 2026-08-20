@@ -242,6 +242,10 @@ apis:
   humanURL: https://www.ieso.ca/sector-participants/technical-interfaces
   tags:
   - Dispatch
+  - Real-Time
+  - Market Participants
+  tags_raw:
+  - Dispatch
   - Real Time
   - Market Participants
   properties:
@@ -258,6 +262,11 @@ apis:
     market participants.
   humanURL: https://www.ieso.ca/sector-participants/technical-interfaces
   tags:
+  - Dispatch
+  - Notification
+  - Push
+  - Market Participants
+  tags_raw:
   - Dispatch
   - Notifications
   - Push
