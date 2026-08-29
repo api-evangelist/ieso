@@ -19,6 +19,17 @@ description: >-
   Ontario market participants with IESO-issued machine accounts. IESO publishes no consumer energy-data
   API: Ontario's Green Button mandate (O. Reg. 633/21) binds licensed electricity and gas distributors,
   not the system operator, so there is no retail usage or billing surface here at all.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://www.ieso.ca/-/media/Images/IESO/Logo/ieso-logo-lrg.png
 tags:
 - Energy
